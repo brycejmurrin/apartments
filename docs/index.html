@@ -13,28 +13,9 @@
       <p id="meta" class="muted">Loading…</p>
     </div>
     <div class="actions">
-      <button id="runBtn" title="Trigger the GitHub Actions crawler">▶ Run crawler</button>
-      <button id="settingsBtn" class="ghost">⚙ Settings</button>
+      <button id="refreshBtn" title="Reload the latest crawled data">↻ Refresh</button>
     </div>
   </header>
-
-  <section id="settings" class="panel hidden">
-    <h2>Settings</h2>
-    <p class="muted">
-      To launch the crawler from this page, paste a GitHub
-      <strong>fine-grained personal access token</strong> scoped to this repo with
-      <em>Actions: Read and write</em> permission. It is stored only in your
-      browser's localStorage and sent only to api.github.com.
-    </p>
-    <label>Owner <input id="owner" placeholder="brycejmurrin" /></label>
-    <label>Repo <input id="repo" placeholder="apartments" /></label>
-    <label>Branch <input id="branch" placeholder="claude/multi-site-rental-scraper-kto2c3" /></label>
-    <label>Token <input id="token" type="password" placeholder="github_pat_…" /></label>
-    <div class="actions">
-      <button id="saveSettings">Save</button>
-      <a id="actionsLink" href="#" target="_blank" rel="noopener" class="ghost button">Open Actions tab ↗</a>
-    </div>
-  </section>
 
   <section class="filters">
     <input id="search" type="search" placeholder="Search title / neighborhood…" />
@@ -62,9 +43,11 @@
   </table>
 
   <footer class="muted">
-    Data is crawled by GitHub Actions into <code>docs/data/listings.json</code>.
-    Sites with aggressive bot protection (Zillow, Trulia, Apartments.com) may show
-    no results when crawled from CI — see the repo README.
+    This page just displays the latest crawl results from
+    <code>docs/data/listings.json</code>. The crawler runs on your own machine
+    (a residential IP — listing sites block datacenter/cloud IPs). To update the
+    data: <code>make crawl</code> (runs the crawler and pushes), then this page
+    refreshes within a minute. See the repo README for setup.
   </footer>
 
   <script src="./app.js"></script>
