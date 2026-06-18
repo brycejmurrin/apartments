@@ -1,9 +1,8 @@
 // SF 2-Bedroom Rentals — Scriptable scraper
 // ---------------------------------------------------------------------------
-// Runs on your iPhone (Scriptable app). Because it uses the phone's native HTTP
-// client (no browser CORS) from your residential IP, it can fetch the listing
-// sites that block datacenter/cloud IPs. It then pushes the results to your
-// GitHub repo via the API, so the GitHub Pages dashboard displays them.
+// Runs on your iPhone (Scriptable app). Uses the phone's residential IP +
+// native HTTP to fetch listing sites, then pushes results to your GitHub repo
+// via the API so the GitHub Pages dashboard shows them.
 //
 // Tap to run from the app, a home-screen widget, or an iOS Shortcut.
 // See scriptable/README.md for one-time setup.
@@ -20,21 +19,38 @@ const CRITERIA = {
   minBeds: 2,
   maxBeds: 2,
   clSite: "sfbay", // Craigslist site
-  clArea: "sfc", // Craigslist area (San Francisco city)
+  clArea: "sfc",   // Craigslist area (San Francisco city)
 };
 
-// A real mobile-Safari header set; helps blend in from the residential IP.
-function headers() {
-  return {
-    "User-Agent":
-      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 " +
-      "(KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
-    "Accept-Language": "en-US,en;q=0.9",
-  };
+// Full browser-like headers. extra = overrides/additions.
+function headers(extra) {
+  return Object.assign(
+    {
+      "User-Agent":
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 " +
+        "(KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+    },
+    extra || {}
+  );
+}
+
+// Scriptable shares cookies across Request() calls within the same script run
+// (WebKit cookie store). Prime a domain by loading its homepage so the session
+// cookie is set before hitting the real API endpoint.
+async function prime(url) {
+  try {
+    const r = new Request(url);
+    r.headers = headers();
+    await r.loadString();
+  } catch (_) {}
 }
 
 // ---------------------------------------------------------------------------
-// Parsing helpers (mirror the Python scraper)
+// Parsing helpers
 // ---------------------------------------------------------------------------
 function decodeEntities(s) {
   return (s || "")
@@ -46,7 +62,6 @@ function decodeEntities(s) {
     .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n, 10)))
     .trim();
 }
-
 function parsePrice(text) {
   const m = (text || "").match(/\$\s*([\d,]+)/);
   if (!m) return null;
@@ -69,7 +84,6 @@ function idFromUrl(url) {
   const parts = url.replace(/\/+$/, "").split("/");
   return (parts[parts.length - 1] || url).replace(/\.html$/, "");
 }
-
 function listing(o) {
   return {
     source: o.source,
@@ -94,14 +108,24 @@ function listing(o) {
 // Source: Craigslist (RSS)
 // ---------------------------------------------------------------------------
 async function scrapeCraigslist() {
+  const base = `https://${CRITERIA.clSite}.craigslist.org`;
+  await prime(base + "/");
+
   const url =
-    `https://${CRITERIA.clSite}.craigslist.org/search/${CRITERIA.clArea}/apa` +
+    `${base}/search/${CRITERIA.clArea}/apa` +
     `?min_bedrooms=${CRITERIA.minBeds}&max_bedrooms=${CRITERIA.maxBeds}` +
     `&availabilityMode=0&format=rss`;
   const req = new Request(url);
-  req.headers = headers();
-  const xml = await req.loadString();
-  if (req.response.statusCode >= 400) throw new Error("HTTP " + req.response.statusCode);
+  req.headers = headers({ Referer: base + "/" });
+
+  let xml;
+  try {
+    xml = await req.loadString();
+  } catch (e) {
+    throw new Error("CL network: " + e.message);
+  }
+  const code = (req.response || {}).statusCode;
+  if (code && code >= 400) throw new Error("CL HTTP " + code);
 
   const out = [];
   const items = xml.match(/<item[\s\S]*?<\/item>/g) || [];
@@ -111,7 +135,9 @@ async function scrapeCraigslist() {
       (block.match(/rdf:about="([^"]+)"/) || [])[1] ||
       "";
     if (!link) continue;
-    const title = decodeEntities((block.match(/<title>([\s\S]*?)<\/title>/) || [])[1] || "");
+    const title = decodeEntities(
+      (block.match(/<title>([\s\S]*?)<\/title>/) || [])[1] || ""
+    );
     const date = (block.match(/<dc:date>([\s\S]*?)<\/dc:date>/) || [])[1] || null;
     out.push(
       listing({
@@ -143,12 +169,20 @@ async function redfinRegion() {
       encodeURIComponent(`${CRITERIA.city}, ${CRITERIA.state}`) +
       "&v=2"
   );
-  req.headers = headers();
-  const txt = await req.loadString();
-  if (req.response.statusCode >= 400) throw new Error("HTTP " + req.response.statusCode);
+  req.headers = headers({
+    Accept: "application/json, text/plain, */*",
+    Referer: "https://www.redfin.com/",
+  });
+  let txt;
+  try {
+    txt = await req.loadString();
+  } catch (e) {
+    throw new Error("Redfin region network: " + e.message);
+  }
+  const code = (req.response || {}).statusCode;
+  if (code && code >= 400) throw new Error("Redfin region HTTP " + code);
   const data = JSON.parse(stripRedfin(txt));
-  const sections = (data.payload && data.payload.sections) || [];
-  for (const sec of sections) {
+  for (const sec of (data.payload && data.payload.sections) || []) {
     for (const row of sec.rows || []) {
       if (String(row.type) === "6" && row.id) {
         return row.id.split("_").pop();
@@ -159,8 +193,11 @@ async function redfinRegion() {
 }
 
 async function scrapeRedfin() {
+  await prime("https://www.redfin.com/");
+
   const regionId = await redfinRegion();
-  if (!regionId) return [];
+  if (!regionId) throw new Error("Redfin: no region ID");
+
   const q = [
     "al=1",
     `region_id=${regionId}`,
@@ -173,10 +210,24 @@ async function scrapeRedfin() {
     `min_beds=${CRITERIA.minBeds}`,
     `max_beds=${CRITERIA.maxBeds}`,
   ].join("&");
-  const req = new Request("https://www.redfin.com/stingray/api/v1/search/rentals?" + q);
-  req.headers = headers();
-  const txt = await req.loadString();
-  if (req.response.statusCode >= 400) throw new Error("HTTP " + req.response.statusCode);
+
+  const req = new Request(
+    "https://www.redfin.com/stingray/api/v1/search/rentals?" + q
+  );
+  req.headers = headers({
+    Accept: "application/json, text/plain, */*",
+    Referer: "https://www.redfin.com/",
+  });
+
+  let txt;
+  try {
+    txt = await req.loadString();
+  } catch (e) {
+    throw new Error("Redfin rentals network: " + e.message);
+  }
+  const code = (req.response || {}).statusCode;
+  if (code && code >= 400) throw new Error("Redfin HTTP " + code);
+
   const data = JSON.parse(stripRedfin(txt));
   const homes = data.homes || (data.payload && data.payload.homes) || [];
 
@@ -208,7 +259,81 @@ async function scrapeRedfin() {
 }
 
 // ---------------------------------------------------------------------------
-// GitHub publish
+// Source: Zillow (search page — worth trying from a residential iPhone IP)
+// ---------------------------------------------------------------------------
+async function scrapeZillow() {
+  const searchUrl =
+    "https://www.zillow.com/san-francisco-ca/rentals/" +
+    `?beds=${CRITERIA.minBeds}-${CRITERIA.maxBeds}`;
+  await prime("https://www.zillow.com/");
+
+  const req = new Request(searchUrl);
+  req.headers = headers({ Referer: "https://www.zillow.com/" });
+
+  let html;
+  try {
+    html = await req.loadString();
+  } catch (e) {
+    throw new Error("Zillow network: " + e.message);
+  }
+  const code = (req.response || {}).statusCode;
+  if (code && code >= 400) throw new Error("Zillow HTTP " + code);
+
+  // Extract __NEXT_DATA__ JSON embedded in the page
+  const m = html.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  if (!m) throw new Error("Zillow: no __NEXT_DATA__");
+  const page = JSON.parse(m[1]);
+
+  // Walk the nested structure to find listResults
+  function findListResults(obj, depth) {
+    if (!obj || typeof obj !== "object" || depth > 12) return [];
+    if (Array.isArray(obj)) {
+      for (const el of obj) {
+        const r = findListResults(el, depth + 1);
+        if (r.length) return r;
+      }
+      return [];
+    }
+    if (Array.isArray(obj.listResults) && obj.listResults.length) return obj.listResults;
+    for (const v of Object.values(obj)) {
+      const r = findListResults(v, depth + 1);
+      if (r.length) return r;
+    }
+    return [];
+  }
+  const results = findListResults(page, 0);
+  if (!results.length) throw new Error("Zillow: 0 list results (possibly blocked)");
+
+  const out = [];
+  for (const h of results) {
+    const id = h.zpid || h.id;
+    if (!id) continue;
+    out.push(
+      listing({
+        source: "zillow",
+        source_id: id,
+        url: h.detailUrl
+          ? (h.detailUrl.startsWith("http") ? h.detailUrl : "https://www.zillow.com" + h.detailUrl)
+          : "",
+        title: h.address || h.streetAddress || "Zillow rental",
+        price: parsePrice(h.price || h.unformattedPrice),
+        beds: h.beds != null ? Number(h.beds) : null,
+        baths: h.baths != null ? Number(h.baths) : null,
+        sqft: h.area != null ? Number(h.area) : null,
+        address: h.address || null,
+        neighborhood: h.hdpData && h.hdpData.homeInfo && h.hdpData.homeInfo.neighborhoodRegion
+          ? h.hdpData.homeInfo.neighborhoodRegion.name
+          : null,
+        lat: h.latLong ? h.latLong.latitude : null,
+        lng: h.latLong ? h.latLong.longitude : null,
+      })
+    );
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// GitHub publish — retries on 409 (stale SHA) up to 3 times
 // ---------------------------------------------------------------------------
 async function getToken() {
   if (Keychain.contains("gh_token")) return Keychain.get("gh_token");
@@ -230,38 +355,47 @@ async function getToken() {
 
 async function publish(payload, token) {
   const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
+  const content = Data.fromString(JSON.stringify(payload, null, 2)).toBase64String();
 
-  // Current file SHA (required to update an existing file).
-  let sha = null;
-  const get = new Request(`${api}?ref=${BRANCH}`);
-  get.headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
-  try {
-    const cur = await get.loadJSON();
-    if (cur && cur.sha) sha = cur.sha;
-  } catch (e) {
-    /* file may not exist yet */
+  for (let attempt = 0; attempt < 3; attempt++) {
+    // Always fetch a fresh SHA immediately before the PUT to avoid 409 conflicts.
+    let sha = null;
+    const get = new Request(`${api}?ref=${BRANCH}`);
+    get.headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+    };
+    try {
+      const cur = await get.loadJSON();
+      if (cur && cur.sha) sha = cur.sha;
+    } catch (_) {}
+
+    const body = {
+      message: `data: scriptable crawl ${new Date().toISOString()}`,
+      content,
+      branch: BRANCH,
+    };
+    if (sha) body.sha = sha;
+
+    const put = new Request(api);
+    put.method = "PUT";
+    put.headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+    };
+    put.body = JSON.stringify(body);
+    const res = await put.loadJSON();
+    const status = (put.response || {}).statusCode || 0;
+
+    if (status === 409 && attempt < 2) continue; // retry with a freshly fetched SHA
+    if (status >= 400) {
+      throw new Error(
+        "GitHub " + status + ": " + JSON.stringify(res).slice(0, 300)
+      );
+    }
+    return res;
   }
-
-  const body = {
-    message: `data: scriptable crawl ${new Date().toISOString()}`,
-    content: Data.fromString(JSON.stringify(payload, null, 2)).toBase64String(),
-    branch: BRANCH,
-  };
-  if (sha) body.sha = sha;
-
-  const put = new Request(api);
-  put.method = "PUT";
-  put.headers = {
-    Authorization: `Bearer ${token}`,
-    Accept: "application/vnd.github+json",
-    "Content-Type": "application/json",
-  };
-  put.body = JSON.stringify(body);
-  const res = await put.loadJSON();
-  if (put.response.statusCode >= 400) {
-    throw new Error("GitHub " + put.response.statusCode + ": " + JSON.stringify(res).slice(0, 200));
-  }
-  return res;
 }
 
 // ---------------------------------------------------------------------------
@@ -273,6 +407,7 @@ async function main() {
   const SOURCES = [
     ["craigslist", scrapeCraigslist],
     ["redfin", scrapeRedfin],
+    ["zillow", scrapeZillow],
   ];
 
   const sources = {};
@@ -288,11 +423,18 @@ async function main() {
         last_success: new Date().toISOString(),
       };
     } catch (e) {
-      sources[name] = { status: "blocked", count: 0, error: String(e).slice(0, 200), last_success: null };
+      sources[name] = {
+        status: "blocked",
+        count: 0,
+        error: String(e).slice(0, 200),
+        last_success: null,
+      };
     }
   }
 
-  listings.sort((a, b) => String(b.posted_at || "").localeCompare(String(a.posted_at || "")));
+  listings.sort((a, b) =>
+    String(b.posted_at || "").localeCompare(String(a.posted_at || ""))
+  );
 
   const payload = {
     generated_at: new Date().toISOString(),
@@ -310,13 +452,15 @@ async function main() {
   await publish(payload, token);
 
   const ok = Object.values(sources).filter((s) => s.status === "ok").length;
+  // Show the actual error message (not just "blocked") to help diagnose failures.
   const summary =
     `${payload.total} listings · ${ok}/${SOURCES.length} sources OK\n` +
     Object.entries(sources)
-      .map(([k, v]) => `${k}: ${v.status === "ok" ? v.count : v.status}`)
+      .map(([k, v]) =>
+        `${k}: ${v.status === "ok" ? v.count + " found" : (v.error || v.status)}`
+      )
       .join("\n");
 
-  // If run from a widget/Shortcut, return text; otherwise show an alert.
   if (config.runsInWidget) {
     const w = new ListWidget();
     w.addText("SF Rentals");
