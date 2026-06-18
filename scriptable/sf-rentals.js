@@ -603,7 +603,9 @@ async function zillowPage(pageNum) {
     "https://www.zillow.com/",
     (t) => t.indexOf("__NEXT_DATA__") >= 0
   );
-  if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
+  if (r.code >= 400 || r.error) {
+    throw new Error("HTTP " + (r.code || r.error) + " (sz: " + (r.text || "").length + ")");
+  }
   const m = r.text.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
   if (!m) throw new Error("no __NEXT_DATA__ (challenged?)");
   const results = findKeyArray(JSON.parse(m[1]), "listResults", 0);
