@@ -857,10 +857,6 @@ const APT_EXTRACTOR = `(function(){
   return JSON.stringify({ count: out.length, title: document.title || '', items: out });
 })();`;
 
-// Shared WebView for all Apartments.com pages — created once on page 1 so
-// the Akamai _abck cookie persists across paginated requests.
-let _aptWv = null;
-
 async function apartmentsPage(pageNum, seen, out) {
   const city = CRITERIA.city.trim().toLowerCase().replace(/ /g, "-");
   const bedSeg = CRITERIA.minBeds != null ? `${CRITERIA.minBeds}-bedrooms/` : "";
@@ -868,24 +864,29 @@ async function apartmentsPage(pageNum, seen, out) {
   const url =
     `https://www.apartments.com/${city}-${CRITERIA.state.toLowerCase()}/` + bedSeg + pageSeg;
 
-  if (pageNum === 1) {
-    // Fresh WebView + homepage prime so Akamai sets the _abck cookie before
-    // we hit the search URL. Reuse the same WV for subsequent pages.
-    _aptWv = new WebView();
-    await _aptWv.loadURL("https://www.apartments.com/");
-    await sleep(4000); // let Akamai JS run and issue the cookie
-    await _aptWv.loadURL(url);
-  } else {
-    await _aptWv.loadURL(url);
-  }
-  await sleep(6000); // give Akamai time to validate and render listings
+  // Use the shared WebView (theWebView) — it has been navigating sites all run,
+  // which looks far more like a real browser to Akamai than a fresh cookie-free WV.
+  const wv = theWebView();
 
-  let parsed = JSON.parse(await _aptWv.evaluateJavaScript(APT_EXTRACTOR));
-  if ((!parsed.items || !parsed.items.length) && pageNum === 1) {
-    // One extra retry — Akamai sometimes needs more time on first search load
-    await sleep(5000);
-    parsed = JSON.parse(await _aptWv.evaluateJavaScript(APT_EXTRACTOR));
+  async function primeHomepage() {
+    await wv.loadURL("https://www.apartments.com/");
+    await sleep(8000); // give Akamai sensor JS ample time to collect signals
   }
+
+  if (pageNum === 1) await primeHomepage();
+  await wv.loadURL(url);
+  await sleep(9000);
+
+  let parsed = JSON.parse(await wv.evaluateJavaScript(APT_EXTRACTOR));
+
+  // If blocked (Access Denied / challenge page), re-prime and retry once
+  if (!parsed.items || !parsed.items.length) {
+    await primeHomepage();
+    await wv.loadURL(url);
+    await sleep(12000);
+    parsed = JSON.parse(await wv.evaluateJavaScript(APT_EXTRACTOR));
+  }
+
   if (!parsed.items || !parsed.items.length) {
     if (pageNum === 1)
       throw new Error("0 listings (page: " + (parsed.title || "?").slice(0, 40) + ")");
@@ -909,7 +910,7 @@ async function apartmentsPage(pageNum, seen, out) {
         price: parsePrice(it.price),
         beds: parseBeds(it.beds),
         baths: parseBaths(it.baths || it.beds),
-        sqft: parseSqft(it.beds),
+        sqft: parseSqft(it.sqft),
         address: it.address || null,
         neighborhood: it.city || null,
         lat: it.lat != null ? Number(it.lat) : null,
