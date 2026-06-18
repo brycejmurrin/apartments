@@ -735,10 +735,13 @@ async function scrapeTrulia() {
   const out = [];
   const seenUrls = new Set();
   for (let p = 1; p <= PAGES.trulia; p++) {
+    console.log(`DEBUG: Trulia page ${p}...`);
     let got;
     try {
       got = await truliaPage(p, seenUrls);
+      console.log(`DEBUG: Trulia page ${p} got ${got.length}`);
     } catch (e) {
+      console.log(`DEBUG: Trulia page ${p} failed: ${e.message}`);
       if (p === 1) throw e;
       break;
     }
@@ -747,6 +750,7 @@ async function scrapeTrulia() {
     await sleep(500);
   }
   if (!out.length) throw new Error("0 homes");
+  console.log(`DEBUG: Trulia total: ${out.length}`);
   return out;
 }
 
@@ -1007,7 +1011,9 @@ async function main() {
     listings,
   };
 
+  console.log(`DEBUG: Publishing ${listings.length} listings to GitHub...`);
   await publish(payload, token);
+  console.log(`DEBUG: Published successfully`);
 
   const ok = Object.values(sources).filter((s) => s.status === "ok").length;
   const summary =
