@@ -5,10 +5,11 @@ no datacenter-IP block) and pushes the results to this repo via the GitHub API, 
 the GitHub Pages dashboard shows them. Tap a widget to refresh — no terminal, no
 computer.
 
-It currently scrapes **Craigslist** and **Redfin**, which work reliably from a
-residential IP. (Zillow/Trulia/Apartments.com use PerimeterX/Cloudflare JS
-challenges and may still resist even from a phone; you can add them later in
-`sf-rentals.js`.)
+It scrapes **Craigslist, Redfin, Zillow, Trulia and Apartments.com**. Each
+source runs independently and degrades on its own — if one is blocked the rest
+still load. Zillow works reliably from a residential iPhone IP; Trulia and
+Apartments.com use PerimeterX/Cloudflare JS challenges and may still resist even
+from a phone. The result alert shows the exact status (and error) per source.
 
 ## One-time setup (~5 minutes, all on the phone)
 
