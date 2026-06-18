@@ -28,20 +28,27 @@ GitHub Pages site  ──"Run crawler" (workflow_dispatch via GitHub API)──�
 These sites are *not* equally scrapable, and no amount of free tooling changes
 that:
 
-| Source | Expected result from GitHub Actions (datacenter IP) |
-|---|---|
-| **Craigslist** | ✅ Usually works (RSS feed) |
-| **Redfin** | ✅ Usually works (internal JSON API) |
-| **Zillow** | ❌ Usually blocked (PerimeterX); needs a residential proxy |
-| **Trulia** | ❌ Usually blocked (same stack as Zillow) |
-| **Apartments.com** | ❌ Often blocked (Cloudflare) |
+**Measured result: from GitHub Actions, all five sources return `403`.** A real
+CI run on this repo was blocked by every site — including Craigslist and Redfin
+— because GitHub's shared runner IP ranges are widely blocklisted by anti-bot
+vendors. This is not a bug in the adapters; it's the datacenter-IP reality.
 
-The three hard sites are implemented best-effort and **degrade gracefully** —
-when blocked they log it, the run continues, and the source's previous listings
-are kept and marked `stale` instead of vanishing. To actually get data from
-them for free you'd run the crawler from a **residential IP** (e.g. your own
-machine) rather than CI, or route `scraper/http.py` through a proxy. The same
-`python -m scraper.run` works locally and from Actions.
+| Source | From GitHub Actions (shared datacenter IP) | From a residential IP (run locally) |
+|---|---|---|
+| **Craigslist** | ❌ 403 | ✅ Usually works (RSS feed) |
+| **Redfin** | ❌ 403 | ✅ Usually works (internal JSON API) |
+| **Zillow** | ❌ 403 (PerimeterX) | ⚠️ Often works; may still challenge |
+| **Trulia** | ❌ 403 (PerimeterX) | ⚠️ Often works; may still challenge |
+| **Apartments.com** | ❌ 403 (Cloudflare) | ⚠️ Sometimes works |
+
+So the **practical free workflow is to run the crawler locally** (residential IP)
+and let it commit results, or attach a [self-hosted runner](https://docs.github.com/en/actions/hosting-your-own-runners)
+on your home connection so the scheduled workflow runs from a residential IP.
+Every adapter degrades gracefully: when blocked it logs the 403, the run
+continues, and that source's previous listings are kept and marked `stale`
+instead of vanishing. The same `python -m scraper.run` runs locally or in CI.
+For consistent results from the cloud you'd need to route `scraper/http.py`
+through a residential proxy (not free — out of scope here).
 
 This tool is for **personal** apartment hunting. Scraping these sites is against
 their terms of service; keep request volume low and don't redistribute data.
