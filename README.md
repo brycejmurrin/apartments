@@ -14,10 +14,14 @@ key is stored only on your device — never committed or uploaded. This works
 because an API authenticates by key, not by IP, so there's no datacenter-IP
 block and no scraping involved.
 
-**2. Scrape all five sites locally (power option).** Run the crawler on your own
-machine (a residential IP) to pull Craigslist/Redfin/Zillow/Trulia/Apartments.com
-into `docs/data/listings.json`; the page shows that data if no live API results
-are cached. See "Local crawler" below.
+**2. Scrape from your iPhone (no computer).** Run the crawler on your phone with
+the free Scriptable app — it fetches from your phone's residential IP (so the
+sites don't block it) and pushes results to the repo, which the page then shows.
+Tap a home-screen widget to refresh. See [`scriptable/README.md`](scriptable/README.md).
+
+**3. Scrape all five sites on a computer (power option).** Run the crawler on any
+home machine (residential IP) to pull Craigslist/Redfin/Zillow/Trulia/Apartments.com
+into `docs/data/listings.json`. See "Local crawler" below.
 
 ## How the local crawler works
 
