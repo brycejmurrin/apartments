@@ -770,7 +770,12 @@ async function scrapeTrulia() {
 // string. Defined once and reused for each paginated page.
 const APT_EXTRACTOR = `(function(){
   var map = {};
-  function key(u){ return (u||'').replace(/\\/+$/,''); }
+  function key(u){
+    u = (u||'').replace(/\\/+$/,'');
+    // strip domain so https://www.apartments.com/foo and /foo hash the same
+    var m = u.match(/apartments\\.com(\\/.+)/);
+    return m ? m[1] : u;
+  }
   function slot(u){ var k=key(u); if(!map[k]) map[k]={url:u}; return map[k]; }
   function set(o, f, v){ if(v!=null && v!=='' && (o[f]==null||o[f]==='')) o[f]=v; }
   function norm(s){ return (s||'').replace(/\\s+/g,' ').trim(); }
@@ -795,7 +800,8 @@ const APT_EXTRACTOR = `(function(){
           var u = it.url || it['@id']; if(!u) continue;
           var addr = it.address || {}; var geo = it.geo || {};
           var o = slot(u);
-          set(o,'name', it.name);
+          var nm = (it.name||'').replace(/^3D Tour\\s*-\\s*/i,'').trim();
+          set(o,'name', nm||null);
           set(o,'address', typeof addr==='string' ? addr : (addr.streetAddress||null));
           set(o,'city', typeof addr==='object' ? (addr.addressLocality||null) : null);
           if(geo.latitude!=null)  set(o,'lat', geo.latitude);
@@ -806,6 +812,14 @@ const APT_EXTRACTOR = `(function(){
   } catch(e){}
 
   // --- 2. DOM cards: price, beds, baths, sqft (what JSON-LD lacks) ---
+  // card data-url is often a path (/foo/bar/) while JSON-LD uses the full URL.
+  // Normalize both to the absolute URL so they merge into the same slot.
+  function absUrl(u){
+    if(!u) return null;
+    if(u.startsWith('http')) return u.replace(/\\/+$/,'');
+    if(u.startsWith('/')) return 'https://www.apartments.com' + u.replace(/\\/+$/,'');
+    return u;
+  }
   try {
     var cards = document.querySelectorAll(
       'article[data-url], [data-url][class*="placard"], article.placard, ' +
@@ -814,8 +828,8 @@ const APT_EXTRACTOR = `(function(){
     );
     for (var c=0;c<cards.length;c++){
       var a = cards[c];
-      var u = a.getAttribute('data-url');
-      if(!u){ var ln=a.querySelector('a.property-link,a[href*="apartments.com/"],a[href]'); u = ln&&ln.href; }
+      var u = absUrl(a.getAttribute('data-url'));
+      if(!u){ var ln=a.querySelector('a.property-link,a[href*="apartments.com/"],a[href]'); u = absUrl(ln&&ln.href); }
       if(!u||u==='#') continue;
       var o = slot(u);
       set(o,'id', a.getAttribute('data-listingid') || a.getAttribute('data-id'));
