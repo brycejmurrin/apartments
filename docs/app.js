@@ -8,6 +8,7 @@ let ALL = [];
 let sortKey = "posted_at";
 let sortDir = -1;
 const activeSources = new Set();
+const selectedBeds = new Set(); // empty = all bedroom counts. 4 means "4+".
 
 // ---------------------------------------------------------------------------
 // Load
@@ -78,18 +79,26 @@ function buildSourceFilters() {
   });
 }
 
+function bedMatches(beds) {
+  if (selectedBeds.size === 0) return true;
+  if (beds == null) return false;
+  for (const b of selectedBeds) {
+    if (b === 4 ? beds >= 4 : Math.round(beds) === b) return true;
+  }
+  return false;
+}
+
 function filtered() {
   const q = document.getElementById("search").value.toLowerCase();
   const min = parseInt(document.getElementById("minPrice").value, 10);
   const max = parseInt(document.getElementById("maxPrice").value, 10);
-  const minB = parseInt(document.getElementById("minBeds").value, 10);
-  const maxB = parseInt(document.getElementById("maxBeds").value, 10);
+  const minBaths = parseInt(document.getElementById("minBaths").value, 10);
   return ALL.filter((l) => {
     if (activeSources.size && !activeSources.has(l.source)) return false;
     if (!isNaN(min) && (l.price == null || l.price < min)) return false;
     if (!isNaN(max) && (l.price == null || l.price > max)) return false;
-    if (!isNaN(minB) && (l.beds == null || l.beds < minB)) return false;
-    if (!isNaN(maxB) && (l.beds == null || l.beds > maxB)) return false;
+    if (!bedMatches(l.beds)) return false;
+    if (!isNaN(minBaths) && (l.baths == null || l.baths < minBaths)) return false;
     if (q) {
       const hay = `${l.title || ""} ${l.neighborhood || ""} ${l.address || ""}`.toLowerCase();
       if (!hay.includes(q)) return false;
@@ -140,8 +149,21 @@ function setStatus(msg, kind) {
 // Wire up
 // ---------------------------------------------------------------------------
 document.getElementById("refreshBtn").addEventListener("click", load);
-["search", "minPrice", "maxPrice", "minBeds", "maxBeds"].forEach((id) =>
+["search", "minPrice", "maxPrice", "minBaths"].forEach((id) =>
   document.getElementById(id).addEventListener("input", render)
+);
+document.querySelectorAll("#bedButtons .bed").forEach((btn) =>
+  btn.addEventListener("click", () => {
+    const b = parseInt(btn.dataset.beds, 10);
+    if (selectedBeds.has(b)) {
+      selectedBeds.delete(b);
+      btn.classList.remove("active");
+    } else {
+      selectedBeds.add(b);
+      btn.classList.add("active");
+    }
+    render();
+  })
 );
 document.querySelectorAll("th[data-sort]").forEach((th) =>
   th.addEventListener("click", () => {

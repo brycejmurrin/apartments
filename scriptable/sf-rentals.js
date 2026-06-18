@@ -101,6 +101,11 @@ function parseBeds(text) {
   const m = (text || "").match(/(\d+(?:\.\d+)?)\s*(?:br|bd|beds?)\b/i);
   return m ? parseFloat(m[1]) : null;
 }
+function parseBaths(text) {
+  if (typeof text === "number") return text;
+  const m = (text || "").match(/(\d+(?:\.\d+)?)\s*(?:ba|bath|baths)\b/i);
+  return m ? parseFloat(m[1]) : null;
+}
 function parseSqft(text) {
   if (typeof text === "number") return text;
   const m = (text || "").match(/(\d[\d,]*)\s*(?:ft2|sq\s?ft|sqft)/i);
@@ -193,26 +198,83 @@ async function clFromSapi() {
   const minPosters = (data.data && data.data.decode && data.data.decode.minPosterId) || 0;
   const out = [];
   for (const it of items) {
-    // Positional array: [postId, ?, category, ..., price, ..., {6:[lat,lng]}, ..., title]
     if (!Array.isArray(it)) continue;
     const postId = it[0];
-    // title is the last string element; price is the first plausible $ number.
-    let title = "";
-    let price = null;
-    for (const el of it) {
-      if (typeof el === "string" && el.length > title.length) title = el;
-      if (typeof el === "number" && price == null && el >= 200 && el <= 100000) price = el;
-    }
-    let lat = null, lng = null;
-    for (const el of it) {
-      if (el && typeof el === "object" && !Array.isArray(el)) {
-        const geo = el["6"] || el[6];
-        if (Array.isArray(geo) && geo.length >= 2) {
-          lat = parseFloat(geo[0]);
-          lng = parseFloat(geo[1]);
-        }
+
+    // Walk the item array. It mixes scalars and tagged sub-arrays/objects.
+    // Collect every string + number so we can detect each field by shape
+    // rather than relying on a fixed position (the layout drifts).
+    const strings = [];
+    const numbers = [];
+    let beds = null, baths = null, sqft = null, lat = null, lng = null, posted = null;
+
+    const visit = (node) => {
+      if (node == null) return;
+      if (typeof node === "string") {
+        strings.push(node);
+        return;
       }
+      if (typeof node === "number") {
+        numbers.push(node);
+        // 10-digit value ~ unix seconds → posting date.
+        if (posted == null && node > 1000000000 && node < 4000000000) {
+          posted = new Date(node * 1000).toISOString();
+        }
+        return;
+      }
+      if (Array.isArray(node)) {
+        // A [lat, lng] geo pair (SF: lat ~37.x, lng ~ -122.x).
+        if (
+          node.length >= 2 &&
+          typeof node[0] === "number" &&
+          typeof node[1] === "number" &&
+          node[0] > 32 && node[0] < 42 &&
+          node[1] < -114 && node[1] > -125
+        ) {
+          lat = node[0];
+          lng = node[1];
+        }
+        node.forEach(visit);
+        return;
+      }
+      if (typeof node === "object") {
+        if (node.bedrooms != null && beds == null) beds = Number(node.bedrooms);
+        if (node.bathrooms != null && baths == null) baths = Number(node.bathrooms);
+        const sq = node.sqft || node.size || node.area;
+        if (sq != null && sqft == null) sqft = parseSqft(String(sq)) || Number(sq) || null;
+        Object.values(node).forEach(visit);
+      }
+    };
+    it.forEach(visit);
+
+    // Title = the longest free-text string (not a pure housing/price token).
+    let title = "";
+    for (const s of strings) {
+      if (/^\$?\d/.test(s.trim())) continue;
+      if (s.length > title.length) title = s;
     }
+    if (!title) title = strings.sort((a, b) => b.length - a.length)[0] || "";
+
+    // Beds/sqft/hood from any string if not already structured.
+    for (const s of strings) {
+      if (beds == null) beds = parseBeds(s);
+      if (sqft == null) sqft = parseSqft(s);
+    }
+    let neighborhood = null;
+    for (const s of strings) {
+      neighborhood = neighborhood || parseHood(s);
+    }
+
+    // Price: a "$" string wins; else the largest plausible rent number.
+    let price = null;
+    for (const s of strings) {
+      price = price || parsePrice(s);
+    }
+    if (price == null) {
+      const rents = numbers.filter((n) => n >= 500 && n <= 90000);
+      if (rents.length) price = Math.max(...rents);
+    }
+
     if (!postId && !title) continue;
     out.push(
       listing({
@@ -222,10 +284,14 @@ async function clFromSapi() {
           ? `https://${CRITERIA.clSite}.craigslist.org/d/apa/${postId}.html`
           : `https://${CRITERIA.clSite}.craigslist.org/`,
         title: decodeEntities(title),
-        price: parsePrice(price),
-        beds: parseBeds(title),
-        sqft: parseSqft(title),
-        neighborhood: parseHood(title),
+        price,
+        beds,
+        baths,
+        sqft,
+        neighborhood,
+        lat,
+        lng,
+        posted_at: posted,
       })
     );
   }
@@ -334,6 +400,12 @@ async function redfinOnce() {
     const centroid = (addrInfo.centroid && addrInfo.centroid.centroid) || {};
     const url = hd.url || h.url || "";
 
+    // Posting date: Redfin gives epoch millis in a few possible fields.
+    const epoch =
+      rx.availableDate || hd.listingAddedDate || hd.searchStatusDate || rx.lastUpdated;
+    const posted =
+      typeof epoch === "number" ? new Date(epoch).toISOString() : null;
+
     out.push(
       listing({
         source: "redfin",
@@ -353,6 +425,7 @@ async function redfinOnce() {
         neighborhood: addrInfo.city || hd.neighborhood || null,
         lat: centroid.latitude != null ? centroid.latitude : null,
         lng: centroid.longitude != null ? centroid.longitude : null,
+        posted_at: posted,
       })
     );
   }
@@ -412,6 +485,7 @@ async function scrapeZillow() {
   for (const h of results) {
     const id = h.zpid || h.id;
     if (!id) continue;
+    const hi = (h.hdpData && h.hdpData.homeInfo) || {};
     out.push(
       listing({
         source: "zillow",
@@ -422,17 +496,22 @@ async function scrapeZillow() {
             : "https://www.zillow.com" + h.detailUrl
           : "",
         title: h.address || h.streetAddress || "Zillow rental",
-        price: parsePrice(h.price || h.unformattedPrice),
-        beds: h.beds != null ? Number(h.beds) : null,
-        baths: h.baths != null ? Number(h.baths) : null,
-        sqft: h.area != null ? Number(h.area) : null,
-        address: h.address || null,
-        neighborhood:
-          h.hdpData && h.hdpData.homeInfo && h.hdpData.homeInfo.neighborhoodRegion
-            ? h.hdpData.homeInfo.neighborhoodRegion.name
+        price: parsePrice(h.price || h.unformattedPrice || hi.price),
+        beds: h.beds != null ? Number(h.beds) : hi.bedrooms != null ? Number(hi.bedrooms) : null,
+        baths: h.baths != null ? Number(h.baths) : hi.bathrooms != null ? Number(hi.bathrooms) : null,
+        sqft:
+          h.area != null
+            ? Number(h.area)
+            : hi.livingArea != null
+            ? Number(hi.livingArea)
             : null,
-        lat: h.latLong ? h.latLong.latitude : null,
-        lng: h.latLong ? h.latLong.longitude : null,
+        address: h.address || hi.streetAddress || null,
+        neighborhood:
+          (h.hdpData && hi.neighborhoodRegion && hi.neighborhoodRegion.name) ||
+          hi.city ||
+          "San Francisco",
+        lat: h.latLong ? h.latLong.latitude : hi.latitude != null ? hi.latitude : null,
+        lng: h.latLong ? h.latLong.longitude : hi.longitude != null ? hi.longitude : null,
       })
     );
   }
@@ -558,11 +637,34 @@ async function scrapeApartments() {
   // Give Akamai's sensor JS time to clear and the listings to render.
   await sleep(4500);
 
-  // Scrape JSON-LD + placard cards from the live DOM. Returns a JSON string.
+  // Scrape JSON-LD + placard cards from the live DOM and MERGE them per URL:
+  // placards carry price/beds/address, JSON-LD carries geo/name. Returns JSON.
   const extractor = `(function(){
-    var out = [];
-    var seen = {};
-    function push(o){ if(o && o.url && !seen[o.url]){ seen[o.url]=1; out.push(o); } }
+    var map = {};
+    function key(u){ return (u||'').replace(/\\/+$/,''); }
+    function slot(u){ var k=key(u); if(!map[k]) map[k]={url:u}; return map[k]; }
+    function set(o, f, v){ if(v!=null && v!=='' && (o[f]==null||o[f]==='')) o[f]=v; }
+
+    // Placards first (richest pricing/bed data).
+    try {
+      var cards = document.querySelectorAll('article.placard, li.mortar-wrapper article, .placard');
+      for (var c=0;c<cards.length;c++){
+        var a = cards[c];
+        var u = a.getAttribute('data-url');
+        if(!u){ var ln=a.querySelector('a.property-link,a[href]'); u = ln && ln.href; }
+        if(!u) continue;
+        function tx(sel){ var el=a.querySelector(sel); return el?el.textContent.replace(/\\s+/g,' ').trim():null; }
+        var o = slot(u);
+        set(o,'id', a.getAttribute('data-listingid'));
+        set(o,'name', tx('.js-placardTitle, .property-title, .property-name'));
+        set(o,'price', tx('.property-pricing, .price-range, .property-rents'));
+        set(o,'beds', tx('.property-beds, .bed-range'));
+        set(o,'baths', tx('.property-baths, .bath-range'));
+        set(o,'address', tx('.property-address'));
+      }
+    } catch(e){}
+
+    // JSON-LD fills name/address/geo gaps.
     try {
       var s = document.querySelectorAll('script[type="application/ld+json"]');
       for (var i=0;i<s.length;i++){
@@ -578,30 +680,19 @@ async function scrapeApartments() {
             var it = items[k]; if(!it||typeof it!=='object') continue;
             var u = it.url || it['@id']; if(!u) continue;
             var addr = it.address || {}; var geo = it.geo || {};
-            push({ url:u, name: it.name||null,
-              address: (typeof addr==='string')?addr:(addr.streetAddress||null),
-              city: (typeof addr==='object')?(addr.addressLocality||null):null,
-              lat: geo.latitude!=null?geo.latitude:null,
-              lng: geo.longitude!=null?geo.longitude:null });
+            var o = slot(u);
+            set(o,'name', it.name);
+            set(o,'address', (typeof addr==='string')?addr:(addr.streetAddress||null));
+            set(o,'city', (typeof addr==='object')?(addr.addressLocality||null):null);
+            if(geo.latitude!=null) set(o,'lat', geo.latitude);
+            if(geo.longitude!=null) set(o,'lng', geo.longitude);
           }
         }
       }
     } catch(e){}
-    try {
-      var cards = document.querySelectorAll('article.placard, li.mortar-wrapper article, .placard');
-      for (var c=0;c<cards.length;c++){
-        var a = cards[c];
-        var u = a.getAttribute('data-url');
-        if(!u){ var ln=a.querySelector('a.property-link,a[href]'); u = ln && ln.href; }
-        if(!u) continue;
-        function tx(sel){ var el=a.querySelector(sel); return el?el.textContent.replace(/\\s+/g,' ').trim():null; }
-        push({ url:u, id: a.getAttribute('data-listingid'),
-          name: tx('.js-placardTitle, .property-title'),
-          price: tx('.property-pricing, .price-range'),
-          beds: tx('.property-beds, .bed-range'),
-          address: tx('.property-address') });
-      }
-    } catch(e){}
+
+    var out = [];
+    for (var kk in map) out.push(map[kk]);
     return JSON.stringify({ ok: out.length>0, count: out.length,
       title: document.title || '', items: out });
   })();`;
@@ -631,6 +722,7 @@ async function scrapeApartments() {
         title: it.name || it.address || "Apartments.com listing",
         price: parsePrice(it.price),
         beds: parseBeds(it.beds),
+        baths: parseBaths(it.baths || it.beds),
         sqft: parseSqft(it.beds),
         address: it.address || null,
         neighborhood: it.city || null,

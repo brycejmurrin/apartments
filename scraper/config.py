@@ -9,8 +9,9 @@ from typing import Optional
 class Criteria:
     city: str = "San Francisco"
     state: str = "CA"
-    min_bedrooms: int = 2
-    max_bedrooms: int = 2
+    # None = crawl all bedroom counts and filter on the dashboard.
+    min_bedrooms: Optional[int] = None
+    max_bedrooms: Optional[int] = None
     min_price: Optional[int] = None
     max_price: Optional[int] = None
 

@@ -62,10 +62,11 @@ _ADDRESS_TOKENS = {"property-address", "property-addr"}
 
 def _search_url(c: Criteria) -> str:
     city = c.city.strip().lower().replace(" ", "-")
-    return (
-        f"https://www.apartments.com/{city}-{c.state.lower()}/"
-        f"{c.min_bedrooms}-bedrooms/"
-    )
+    base = f"https://www.apartments.com/{city}-{c.state.lower()}/"
+    # Omit the bedroom segment to crawl all rentals.
+    if c.min_bedrooms is not None:
+        return f"{base}{c.min_bedrooms}-bedrooms/"
+    return base
 
 
 def _classes(attrs: Dict[str, Optional[str]]) -> set:

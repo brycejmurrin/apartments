@@ -21,8 +21,22 @@
     <input id="search" type="search" placeholder="Search title / neighborhood…" />
     <label>Min $ <input id="minPrice" type="number" min="0" step="100" /></label>
     <label>Max $ <input id="maxPrice" type="number" min="0" step="100" /></label>
-    <label>Min beds <input id="minBeds" type="number" min="0" step="1" /></label>
-    <label>Max beds <input id="maxBeds" type="number" min="0" step="1" /></label>
+    <span class="beds" id="bedButtons">
+      <span class="muted">Beds:</span>
+      <button type="button" class="bed" data-beds="0">Studio</button>
+      <button type="button" class="bed" data-beds="1">1</button>
+      <button type="button" class="bed" data-beds="2">2</button>
+      <button type="button" class="bed" data-beds="3">3</button>
+      <button type="button" class="bed" data-beds="4">4+</button>
+    </span>
+    <label>Baths
+      <select id="minBaths">
+        <option value="">Any</option>
+        <option value="1">1+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+      </select>
+    </label>
     <span id="sourceFilters" class="source-filters"></span>
     <span id="count" class="muted"></span>
   </section>

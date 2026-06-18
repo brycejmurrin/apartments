@@ -37,11 +37,13 @@ def _build_url(c: Criteria) -> str:
 
 def _build_params(c: Criteria) -> dict:
     params = {
-        "min_bedrooms": c.min_bedrooms,
-        "max_bedrooms": c.max_bedrooms,
         "availabilityMode": 0,
         "format": "rss",
     }
+    if c.min_bedrooms is not None:
+        params["min_bedrooms"] = c.min_bedrooms
+    if c.max_bedrooms is not None:
+        params["max_bedrooms"] = c.max_bedrooms
     if c.min_price is not None:
         params["min_price"] = c.min_price
     if c.max_price is not None:

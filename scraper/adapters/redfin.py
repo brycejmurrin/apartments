@@ -71,9 +71,10 @@ def search(c: Criteria) -> List[Listing]:
         "page_number": 1,
         "uipt": "1,2,3,4,7,8",  # property types
         "v": 8,
-        "min_beds": c.min_bedrooms,
     }
-    if c.max_bedrooms:
+    if c.min_bedrooms is not None:
+        params["min_beds"] = c.min_bedrooms
+    if c.max_bedrooms is not None:
         params["max_beds"] = c.max_bedrooms
     if c.min_price:
         params["min_price"] = c.min_price
