@@ -7,9 +7,27 @@ computer.
 
 It scrapes **Craigslist, Redfin, Zillow, Trulia and Apartments.com**. Each
 source runs independently and degrades on its own — if one is blocked the rest
-still load. Zillow works reliably from a residential iPhone IP; Trulia and
-Apartments.com use PerimeterX/Cloudflare JS challenges and may still resist even
-from a phone. The result alert shows the exact status (and error) per source.
+still load. The result alert shows the exact status (and error) per source.
+
+How each source is fetched:
+
+| Source | Method |
+|---|---|
+| Craigslist | RSS feed, then the modern `sapi.craigslist.org` JSON API |
+| Redfin | internal `stingray` JSON API (hardcoded SF region id when the autocomplete endpoint is blocked) |
+| Zillow | `__NEXT_DATA__` JSON embedded in the search page |
+| Trulia | `__NEXT_DATA__` JSON embedded in the search page |
+| Apartments.com | **a real WebView** — see below |
+
+**Apartments.com is special.** It's behind Akamai Bot Manager, which 403s any
+raw HTTP request because there's no valid `_abck` sensor cookie (that cookie is
+minted by executing Akamai's obfuscated JavaScript). So instead of an HTTP
+request, the script loads the page in Scriptable's real iOS **WebView** — a
+genuine Safari engine on your residential IP — lets Akamai's JS run and clear,
+then scrapes the rendered DOM. This is the only reliable free way to get
+Apartments.com from a phone. (WebViews can't run inside a home-screen widget, so
+that one source is skipped when the script runs as a widget; the other four
+still work.)
 
 ## One-time setup (~5 minutes, all on the phone)
 

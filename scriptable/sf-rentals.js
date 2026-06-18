@@ -520,90 +520,108 @@ async function scrapeTrulia() {
 }
 
 // ---------------------------------------------------------------------------
-// Source: Apartments.com (JSON-LD primary)
+// Source: Apartments.com — via a real WebView (defeats Akamai Bot Manager)
 // ---------------------------------------------------------------------------
+// Apartments.com is fronted by Akamai Bot Manager, which 403s any raw HTTP
+// request (no valid _abck sensor cookie). A real browser passes because it
+// executes Akamai's JS. Scriptable ships a real iOS WebKit WebView, so we load
+// the page there (real TLS + JS + your residential IP), let Akamai clear, then
+// scrape the rendered DOM via evaluateJavaScript. Widgets can't run a WebView,
+// so this source is skipped in widget context.
 async function scrapeApartments() {
-  await prime("https://www.apartments.com/");
+  if (config.runsInWidget) throw new Error("WebView unavailable in widget");
+
   const city = CRITERIA.city.trim().toLowerCase().replace(/ /g, "-");
   const url =
     `https://www.apartments.com/${city}-${CRITERIA.state.toLowerCase()}/` +
     `${CRITERIA.minBeds}-bedrooms/`;
-  const r = await httpGet(url, { Referer: "https://www.apartments.com/" });
-  if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
+
+  const wv = new WebView();
+  await wv.loadURL(url);
+  // Give Akamai's sensor JS time to clear and the listings to render.
+  await sleep(4500);
+
+  // Scrape JSON-LD + placard cards from the live DOM. Returns a JSON string.
+  const extractor = `(function(){
+    var out = [];
+    var seen = {};
+    function push(o){ if(o && o.url && !seen[o.url]){ seen[o.url]=1; out.push(o); } }
+    try {
+      var s = document.querySelectorAll('script[type="application/ld+json"]');
+      for (var i=0;i<s.length;i++){
+        var d; try { d = JSON.parse(s[i].textContent); } catch(e){ continue; }
+        var arr = Array.isArray(d) ? d : [d];
+        for (var j=0;j<arr.length;j++){
+          var e = arr[j]; if(!e||typeof e!=='object') continue;
+          var items = [];
+          if (e['@type']==='SearchResultsPage' && e.about && e.about.length) items = e.about;
+          else if (e.itemListElement && e.itemListElement.length)
+            items = e.itemListElement.map(function(x){ return (x&&x.item)||x; });
+          for (var k=0;k<items.length;k++){
+            var it = items[k]; if(!it||typeof it!=='object') continue;
+            var u = it.url || it['@id']; if(!u) continue;
+            var addr = it.address || {}; var geo = it.geo || {};
+            push({ url:u, name: it.name||null,
+              address: (typeof addr==='string')?addr:(addr.streetAddress||null),
+              city: (typeof addr==='object')?(addr.addressLocality||null):null,
+              lat: geo.latitude!=null?geo.latitude:null,
+              lng: geo.longitude!=null?geo.longitude:null });
+          }
+        }
+      }
+    } catch(e){}
+    try {
+      var cards = document.querySelectorAll('article.placard, li.mortar-wrapper article, .placard');
+      for (var c=0;c<cards.length;c++){
+        var a = cards[c];
+        var u = a.getAttribute('data-url');
+        if(!u){ var ln=a.querySelector('a.property-link,a[href]'); u = ln && ln.href; }
+        if(!u) continue;
+        function tx(sel){ var el=a.querySelector(sel); return el?el.textContent.replace(/\\s+/g,' ').trim():null; }
+        push({ url:u, id: a.getAttribute('data-listingid'),
+          name: tx('.js-placardTitle, .property-title'),
+          price: tx('.property-pricing, .price-range'),
+          beds: tx('.property-beds, .bed-range'),
+          address: tx('.property-address') });
+      }
+    } catch(e){}
+    return JSON.stringify({ ok: out.length>0, count: out.length,
+      title: document.title || '', items: out });
+  })();`;
+
+  let parsed;
+  try {
+    const res = await wv.evaluateJavaScript(extractor);
+    parsed = JSON.parse(res);
+  } catch (e) {
+    throw new Error("WebView eval failed: " + e.message);
+  }
+
+  if (!parsed.items || !parsed.items.length) {
+    // Title often reveals a challenge ("Access Denied" / "Pardon Our Interruption").
+    throw new Error("0 listings (page: " + (parsed.title || "?").slice(0, 40) + ")");
+  }
 
   const out = [];
-  const seen = new Set();
-  const blocks =
-    r.text.match(
-      /<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi
-    ) || [];
-  for (const raw of blocks) {
-    const json = raw.replace(/^[\s\S]*?>/, "").replace(/<\/script>$/i, "");
-    let data;
-    try {
-      data = JSON.parse(json);
-    } catch (_) {
-      continue;
-    }
-    const entries = Array.isArray(data) ? data : [data];
-    for (const entry of entries) {
-      if (!entry || typeof entry !== "object") continue;
-      let items = [];
-      if (entry["@type"] === "SearchResultsPage" && Array.isArray(entry.about))
-        items = entry.about;
-      else if (Array.isArray(entry.itemListElement))
-        items = entry.itemListElement.map((el) => (el && el.item) || el);
-      for (const it of items) {
-        if (!it || typeof it !== "object") continue;
-        const u = it.url || it["@id"];
-        if (!u || seen.has(u)) continue;
-        seen.add(u);
-        const addr = it.address || {};
-        const geo = it.geo || {};
-        out.push(
-          listing({
-            source: "apartments_com",
-            source_id: idFromUrl(u),
-            url: u,
-            title: it.name || (typeof addr === "string" ? addr : addr.streetAddress) || "Apartments.com listing",
-            address: typeof addr === "string" ? addr : addr.streetAddress || null,
-            neighborhood: typeof addr === "object" ? addr.addressLocality || null : null,
-            lat: geo.latitude != null ? Number(geo.latitude) : null,
-            lng: geo.longitude != null ? Number(geo.longitude) : null,
-          })
-        );
-      }
-    }
+  for (const it of parsed.items) {
+    let u = it.url;
+    if (u && u.startsWith("/")) u = "https://www.apartments.com" + u;
+    out.push(
+      listing({
+        source: "apartments_com",
+        source_id: it.id || idFromUrl(u),
+        url: u,
+        title: it.name || it.address || "Apartments.com listing",
+        price: parsePrice(it.price),
+        beds: parseBeds(it.beds),
+        sqft: parseSqft(it.beds),
+        address: it.address || null,
+        neighborhood: it.city || null,
+        lat: it.lat != null ? Number(it.lat) : null,
+        lng: it.lng != null ? Number(it.lng) : null,
+      })
+    );
   }
-  // Fallback: parse placard cards straight from the HTML when JSON-LD is
-  // missing (Apartments.com sometimes ships listings only as markup).
-  if (!out.length) {
-    const cards = r.text.match(/<article[^>]*class="[^"]*placard[^"]*"[\s\S]*?<\/article>/gi) || [];
-    for (const card of cards) {
-      const u = (card.match(/data-url="([^"]+)"/) || [])[1];
-      if (!u || seen.has(u)) continue;
-      seen.add(u);
-      const titleM =
-        card.match(/class="[^"]*(?:js-placardTitle|property-title)[^"]*"[^>]*>([\s\S]*?)</i) ||
-        card.match(/data-listingid="[^"]*"[^>]*aria-label="([^"]+)"/i);
-      const priceM = card.match(/class="[^"]*(?:property-pricing|price-range)[^"]*"[^>]*>([\s\S]*?)</i);
-      const bedsM = card.match(/class="[^"]*(?:property-beds|bed-range)[^"]*"[^>]*>([\s\S]*?)</i);
-      const addrM = card.match(/class="[^"]*property-address[^"]*"[^>]*>([\s\S]*?)</i);
-      out.push(
-        listing({
-          source: "apartments_com",
-          source_id: (card.match(/data-listingid="([^"]+)"/) || [])[1] || idFromUrl(u),
-          url: u.startsWith("/") ? "https://www.apartments.com" + u : u,
-          title: titleM ? decodeEntities(titleM[1]).trim() : "Apartments.com listing",
-          price: priceM ? parsePrice(decodeEntities(priceM[1])) : null,
-          beds: bedsM ? parseBeds(decodeEntities(bedsM[1])) : null,
-          address: addrM ? decodeEntities(addrM[1]).trim() : null,
-        })
-      );
-    }
-  }
-
-  if (!out.length) throw new Error("0 listings (Cloudflare challenge?)");
   return out;
 }
 
