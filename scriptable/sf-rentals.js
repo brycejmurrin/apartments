@@ -774,44 +774,10 @@ const APT_EXTRACTOR = `(function(){
   function slot(u){ var k=key(u); if(!map[k]) map[k]={url:u}; return map[k]; }
   function set(o, f, v){ if(v!=null && v!=='' && (o[f]==null||o[f]==='')) o[f]=v; }
   function norm(s){ return (s||'').replace(/\\s+/g,' ').trim(); }
-  // Extract field via CSS selector from a card element
-  function tx(el, sel){
-    var found = el.querySelector(sel);
-    return found ? norm(found.textContent) : null;
-  }
-  // Parse numbers from card full-text (price, beds, baths, sqft)
-  function fromText(text, pat){ var m=text.match(pat); return m?m[1].replace(/,/g,''):null; }
+  function tx(el, sel){ var f=el.querySelector(sel); return f?norm(f.textContent):null; }
+  function fromText(text, pat){ var m=text.match(pat); return m?(m[1]||'').replace(/,/g,''):null; }
 
-  try {
-    // Try many selector patterns — Apartments.com periodically changes class names
-    var cards = document.querySelectorAll(
-      'article[data-url], [data-url][class*="placard"], article.placard, ' +
-      'li.mortar-wrapper article, [class*="property-card"], [class*="listing-card"], ' +
-      '[data-testid*="card"], [class*="placard"]'
-    );
-    for (var c=0;c<cards.length;c++){
-      var a = cards[c];
-      var u = a.getAttribute('data-url');
-      if(!u){ var ln=a.querySelector('a.property-link,a[href*="/apartments.com/"],a[href]'); u = ln && ln.href; }
-      if(!u||u==='#') continue;
-      var o = slot(u);
-      // Try explicit selectors first, then fall back to full-text parsing
-      set(o,'id', a.getAttribute('data-listingid') || a.getAttribute('data-id'));
-      set(o,'name', tx(a, '.js-placardTitle,.property-title,.property-name,[class*="title"],[class*="name"]'));
-      set(o,'price', tx(a, '.property-pricing,.price-range,.property-rents,[class*="price"],[data-testid*="price"]'));
-      set(o,'beds',  tx(a, '.property-beds,.bed-range,[class*="beds"],[class*="bedroom"]'));
-      set(o,'baths', tx(a, '.property-baths,.bath-range,[class*="baths"],[class*="bathroom"]'));
-      set(o,'sqft',  tx(a, '.property-sqft,.sqft-range,[class*="sqft"],[class*="sq-ft"],[class*="size"]'));
-      set(o,'address', tx(a, '.property-address,[class*="address"]'));
-      // Full-text fallback if selectors got nothing
-      var full = norm(a.textContent);
-      if(!o.price) set(o,'price', fromText(full, /\\$(\\d[\\d,]*)/));
-      if(!o.beds)  set(o,'beds',  fromText(full, /(\\d+)\\s*(?:Bed|BR|Studio)/i));
-      if(!o.baths) set(o,'baths', fromText(full, /(\\d+(?:\\.\\d+)?)\\s*(?:Bath|BA)/i));
-      if(!o.sqft)  set(o,'sqft',  fromText(full, /([\\d,]+)\\s*(?:Sq\\s?Ft|SF)/i));
-    }
-  } catch(e){}
-
+  // --- 1. JSON-LD first: reliable property names, addresses, geo ---
   try {
     var s = document.querySelectorAll('script[type="application/ld+json"]');
     for (var i=0;i<s.length;i++){
@@ -820,10 +786,9 @@ const APT_EXTRACTOR = `(function(){
       for (var j=0;j<arr.length;j++){
         var e = arr[j]; if(!e||typeof e!=='object') continue;
         var items = [];
-        if (e['@type']==='SearchResultsPage' && e.about && e.about.length) items = e.about;
-        else if (e.itemListElement && e.itemListElement.length)
+        if (e['@type']==='SearchResultsPage' && e.about) items = e.about;
+        else if (e.itemListElement)
           items = e.itemListElement.map(function(x){ return (x&&x.item)||x; });
-        // Also try top-level ApartmentComplex/Residence objects directly
         else if (e['@type'] && e.url) items = [e];
         for (var k=0;k<items.length;k++){
           var it = items[k]; if(!it||typeof it!=='object') continue;
@@ -837,6 +802,39 @@ const APT_EXTRACTOR = `(function(){
           if(geo.longitude!=null) set(o,'lng', geo.longitude);
         }
       }
+    }
+  } catch(e){}
+
+  // --- 2. DOM cards: price, beds, baths, sqft (what JSON-LD lacks) ---
+  try {
+    var cards = document.querySelectorAll(
+      'article[data-url], [data-url][class*="placard"], article.placard, ' +
+      'li.mortar-wrapper article, [class*="property-card"], [class*="listing-card"], ' +
+      '[data-testid*="card"], [class*="placard"]'
+    );
+    for (var c=0;c<cards.length;c++){
+      var a = cards[c];
+      var u = a.getAttribute('data-url');
+      if(!u){ var ln=a.querySelector('a.property-link,a[href*="apartments.com/"],a[href]'); u = ln&&ln.href; }
+      if(!u||u==='#') continue;
+      var o = slot(u);
+      set(o,'id', a.getAttribute('data-listingid') || a.getAttribute('data-id'));
+      // Specific selectors — avoid [class*="name"]/[class*="title"] which grab UI labels
+      set(o,'name',  tx(a, '.js-placardTitle,.property-title,.property-name,h2,h3'));
+      set(o,'price', tx(a, '.property-pricing,.price-range,.property-rents,.js-priceTag'));
+      set(o,'beds',  tx(a, '.property-beds,.bed-range,.js-beds'));
+      set(o,'baths', tx(a, '.property-baths,.bath-range,.js-baths'));
+      set(o,'sqft',  tx(a, '.property-sqft,.sqft-range,.js-sqft'));
+      set(o,'address', tx(a, '.property-address,.js-address'));
+      // Full-text fallback — only run if explicit selectors still got nothing
+      var full = norm(a.textContent);
+      if(!o.price) set(o,'price', fromText(full, /\\$(\\d[\\d,]*)/));
+      if(!o.beds){
+        var bm = full.match(/(\\d+)\\s*(?:Bed|bd|BR)s?/i);
+        set(o,'beds', bm ? bm[1] : (/\\bStudio\\b/i.test(full) ? '0' : null));
+      }
+      if(!o.baths) set(o,'baths', fromText(full, /(\\d+(?:\\.\\d+)?)\\s*(?:Bath|Ba)s?/i));
+      if(!o.sqft)  set(o,'sqft',  fromText(full, /([\\d,]+)\\s*(?:Sq\\s?Ft|SF)/i));
     }
   } catch(e){}
 
