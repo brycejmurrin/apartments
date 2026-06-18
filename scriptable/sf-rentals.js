@@ -19,11 +19,22 @@ const FILE_PATH = "docs/data/listings.json";
 const CRITERIA = {
   city: "San Francisco",
   state: "CA",
-  minBeds: 2,
-  maxBeds: 2,
+  // Bedroom bounds for the crawl. Set both to null to crawl ALL rentals (every
+  // bedroom count) and filter on the dashboard instead. Set e.g. minBeds:2,
+  // maxBeds:2 to crawl only 2-beds.
+  minBeds: null,
+  maxBeds: null,
   clSite: "sfbay", // Craigslist site
   clArea: "sfc",   // Craigslist area (San Francisco city)
 };
+
+// Bed query fragments — emit nothing when the bound is null (crawl all).
+function bedFrag(minKey, maxKey) {
+  let s = "";
+  if (CRITERIA.minBeds != null) s += `&${minKey}=${CRITERIA.minBeds}`;
+  if (CRITERIA.maxBeds != null) s += `&${maxKey}=${CRITERIA.maxBeds}`;
+  return s;
+}
 
 // Minimal, real-looking Safari headers. We deliberately do NOT set
 // Accept-Encoding or Connection — NSURLSession (which Scriptable's Request uses)
@@ -130,8 +141,8 @@ async function clFromRss() {
   const base = `https://${CRITERIA.clSite}.craigslist.org`;
   const url =
     `${base}/search/${CRITERIA.clArea}/apa` +
-    `?min_bedrooms=${CRITERIA.minBeds}&max_bedrooms=${CRITERIA.maxBeds}` +
-    `&availabilityMode=0&format=rss`;
+    `?availabilityMode=0&format=rss` +
+    bedFrag("min_bedrooms", "max_bedrooms");
   const r = await httpGet(url, { Referer: base + "/", Accept: "application/rss+xml,application/xml,text/xml,*/*" });
   if (r.code >= 400 || r.error) throw new Error("RSS HTTP " + (r.code || r.error));
 
@@ -168,8 +179,8 @@ async function clFromSapi() {
   const url =
     "https://sapi.craigslist.org/web/v8/postings/search/full" +
     "?batch=1-0-360-0-0&cc=US&lang=en&searchPath=apa" +
-    `&min_bedrooms=${CRITERIA.minBeds}&max_bedrooms=${CRITERIA.maxBeds}` +
-    "&availabilityMode=0";
+    "&availabilityMode=0" +
+    bedFrag("min_bedrooms", "max_bedrooms");
   const r = await httpGet(url, {
     Accept: "application/json, text/plain, */*",
     Referer: `https://${CRITERIA.clSite}.craigslist.org/`,
@@ -286,9 +297,10 @@ async function redfinOnce() {
     "page_number=1",
     "uipt=1,2,3,4,7,8",
     "v=8",
-    `min_beds=${CRITERIA.minBeds}`,
-    `max_beds=${CRITERIA.maxBeds}`,
-  ].join("&");
+  ]
+    .concat(CRITERIA.minBeds != null ? [`min_beds=${CRITERIA.minBeds}`] : [])
+    .concat(CRITERIA.maxBeds != null ? [`max_beds=${CRITERIA.maxBeds}`] : [])
+    .join("&");
   const r = await httpGet(
     "https://www.redfin.com/stingray/api/v1/search/rentals?" + q,
     { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" }
@@ -379,9 +391,13 @@ function findKeyArray(obj, key, depth) {
 
 async function scrapeZillow() {
   await prime("https://www.zillow.com/");
+  // beds=min-max (e.g. 2-2). Omit entirely to crawl all bedroom counts.
+  const beds =
+    CRITERIA.minBeds != null
+      ? `?beds=${CRITERIA.minBeds}-${CRITERIA.maxBeds != null ? CRITERIA.maxBeds : ""}`
+      : "";
   const r = await httpGet(
-    "https://www.zillow.com/san-francisco-ca/rentals/" +
-      `?beds=${CRITERIA.minBeds}-${CRITERIA.maxBeds}`,
+    "https://www.zillow.com/san-francisco-ca/rentals/" + beds,
     { Referer: "https://www.zillow.com/" }
   );
   if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
@@ -475,7 +491,7 @@ async function scrapeTrulia() {
   const city = CRITERIA.city.replace(/ /g, "_");
   const url =
     `https://www.trulia.com/for_rent/${city},${CRITERIA.state}/` +
-    `${CRITERIA.minBeds}p_beds/`;
+    (CRITERIA.minBeds != null ? `${CRITERIA.minBeds}p_beds/` : "");
   const r = await httpGet(url, { Referer: "https://www.trulia.com/" });
   if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
 
@@ -535,7 +551,7 @@ async function scrapeApartments() {
   const city = CRITERIA.city.trim().toLowerCase().replace(/ /g, "-");
   const url =
     `https://www.apartments.com/${city}-${CRITERIA.state.toLowerCase()}/` +
-    `${CRITERIA.minBeds}-bedrooms/`;
+    (CRITERIA.minBeds != null ? `${CRITERIA.minBeds}-bedrooms/` : "");
 
   const wv = new WebView();
   await wv.loadURL(url);

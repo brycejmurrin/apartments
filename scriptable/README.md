@@ -69,5 +69,10 @@ still work.)
 - The dashboard shows this data on load. If you've also used the page's in-browser
   **⚡ Fetch live** API button, that cached API result takes precedence in your
   browser — tap the API source off, or it's fine, they're just different sources.
-- Change the search (city, bedrooms) at the top of `sf-rentals.js` (`CRITERIA`).
+- By default it crawls **all** SF rentals (every bedroom count) so you can
+  filter by beds/price on the dashboard. To crawl only a specific size, set
+  `minBeds`/`maxBeds` in `CRITERIA` at the top of `sf-rentals.js` (both `null`
+  = crawl everything).
+- Change the city the same way (`CRITERIA.city` / `state` / `clArea`). If you
+  change the city, add its Redfin region id to `REDFIN_REGION`.
 - Keep runs occasional and reasonable — this is for personal apartment hunting.
