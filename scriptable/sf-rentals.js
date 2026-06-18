@@ -457,8 +457,7 @@ async function redfinOnce() {
   console.log(`DEBUG: Redfin regionId=${regionId}`);
   const q = [
     "al=1",
-    `region_id=${regionId}`,
-    "region_type=6",
+    `internal_region_ids=${regionId}`,
     "num_homes=350",
     "ord=redfin-recommended-asc",
     "page_number=1",
