@@ -453,109 +453,81 @@ async function redfinRegion() {
 }
 
 async function redfinOnce() {
-  // Try multiple parameter approaches; Redfin's API is in flux
-  const approaches = [
-    `location=${encodeURIComponent(`${CRITERIA.city}, ${CRITERIA.state}`)}`,
-    `location=${encodeURIComponent(CRITERIA.city)}`,
-  ];
+  const regionId = await redfinRegion();
+  const q = [
+    "al=1",
+    `region_id=${regionId}`,
+    "region_type=6",
+    "num_homes=350",
+    "ord=redfin-recommended-asc",
+    "page_number=1",
+    "uipt=1,2,3,4,7,8",
+    "v=8",
+  ]
+    .concat(CRITERIA.minBeds != null ? [`min_beds=${CRITERIA.minBeds}`] : [])
+    .concat(CRITERIA.maxBeds != null ? [`max_beds=${CRITERIA.maxBeds}`] : [])
+    .join("&");
+  const r = await fetchJSON(
+    "https://www.redfin.com/stingray/api/v1/search/rentals?" + q,
+    { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" },
+    (t) => t.indexOf("homeData") >= 0 || t.indexOf('"homes"') >= 0
+  );
+  if (r.code >= 400 || r.error) throw new Error("rentals HTTP " + (r.code || r.error));
 
-  let lastErr = null;
-  for (const param of approaches) {
-    const label = param.split("=")[1].slice(0, 15);
-    console.log(`DEBUG: Redfin trying ${label}...`);
+  const data = JSON.parse(stripRedfin(r.text));
+  const homes = data.homes || (data.payload && data.payload.homes) || [];
+  const out = [];
+  for (const h of homes) {
+    const hd = h.homeData || h;
+    const rx = h.rentalExtension || hd.rentalExtension || {};
+    const id = hd.propertyId || hd.listingId || h.rentalId || h.propertyId;
+    if (!id) continue;
 
-    const q = [
-      "al=1",
-      param,
-      "num_homes=350",
-      "ord=redfin-recommended-asc",
-      "page_number=1",
-      "uipt=1,2,3,4,7,8",
-      "v=8",
-    ]
-      .concat(CRITERIA.minBeds != null ? [`min_beds=${CRITERIA.minBeds}`] : [])
-      .concat(CRITERIA.maxBeds != null ? [`max_beds=${CRITERIA.maxBeds}`] : [])
-      .join("&");
+    const addrInfo = hd.addressInfo || {};
+    const street =
+      addrInfo.formattedStreetLine ||
+      rx.propertyName ||
+      (hd.streetLine && hd.streetLine.value) ||
+      hd.name ||
+      "Redfin rental";
 
-    const r = await fetchJSON(
-      "https://www.redfin.com/stingray/api/v1/search/rentals?" + q,
-      { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" },
-      (t) => t.indexOf("homeData") >= 0 || t.indexOf('"homes"') >= 0
+    const rent = rx.rentPriceRange || h.rentPriceRange || {};
+    const price = rent.min || rent.max || null;
+    const bedR = rx.bedRange || {};
+    const bathR = rx.bathRange || {};
+    const sqftR = rx.sqftRange || {};
+    const centroid = (addrInfo.centroid && addrInfo.centroid.centroid) || {};
+    const url = hd.url || h.url || "";
+
+    const epoch =
+      rx.availableDate || hd.listingAddedDate || hd.searchStatusDate || rx.lastUpdated;
+    const posted =
+      typeof epoch === "number" ? new Date(epoch).toISOString() : null;
+
+    out.push(
+      listing({
+        source: "redfin",
+        source_id: id,
+        url: url ? (url.startsWith("http") ? url : "https://www.redfin.com" + url) : "",
+        title: rx.propertyName || street,
+        price: typeof price === "number" ? price : null,
+        beds:
+          bedR.min != null
+            ? bedR.min
+            : typeof hd.beds === "number"
+            ? hd.beds
+            : null,
+        baths: bathR.min != null ? bathR.min : null,
+        sqft: sqftR.min != null ? sqftR.min : (hd.sqFt && hd.sqFt.value) || null,
+        address: street,
+        neighborhood: addrInfo.city || hd.neighborhood || null,
+        lat: centroid.latitude != null ? centroid.latitude : null,
+        lng: centroid.longitude != null ? centroid.longitude : null,
+        posted_at: posted,
+      })
     );
-
-    if (!(r.code >= 400 || r.error)) {
-      console.log(`DEBUG: Redfin ${label} succeeded`);
-      // Process and return the successful response
-      const data = JSON.parse(stripRedfin(r.text));
-      const homes = data.homes || (data.payload && data.payload.homes) || [];
-      const out = [];
-      for (const h of homes) {
-        const hd = h.homeData || h;
-        const rx = h.rentalExtension || hd.rentalExtension || {};
-        const id = hd.propertyId || hd.listingId || h.rentalId || h.propertyId;
-        if (!id) continue;
-
-        const addrInfo = hd.addressInfo || {};
-        const street =
-          addrInfo.formattedStreetLine ||
-          rx.propertyName ||
-          (hd.streetLine && hd.streetLine.value) ||
-          hd.name ||
-          "Redfin rental";
-
-        const rent = rx.rentPriceRange || h.rentPriceRange || {};
-        const price = rent.min || rent.max || null;
-        const bedR = rx.bedRange || {};
-        const bathR = rx.bathRange || {};
-        const sqftR = rx.sqftRange || {};
-        const centroid = (addrInfo.centroid && addrInfo.centroid.centroid) || {};
-        const url = hd.url || h.url || "";
-
-        const epoch =
-          rx.availableDate || hd.listingAddedDate || hd.searchStatusDate || rx.lastUpdated;
-        const posted =
-          typeof epoch === "number" ? new Date(epoch).toISOString() : null;
-
-        out.push(
-          listing({
-            source: "redfin",
-            source_id: id,
-            url: url ? (url.startsWith("http") ? url : "https://www.redfin.com" + url) : "",
-            title: rx.propertyName || street,
-            price: typeof price === "number" ? price : null,
-            beds:
-              bedR.min != null
-                ? bedR.min
-                : typeof hd.beds === "number"
-                ? hd.beds
-                : null,
-            baths: bathR.min != null ? bathR.min : null,
-            sqft: sqftR.min != null ? sqftR.min : (hd.sqFt && hd.sqFt.value) || null,
-            address: street,
-            neighborhood: addrInfo.city || hd.neighborhood || null,
-            lat: centroid.latitude != null ? centroid.latitude : null,
-            lng: centroid.longitude != null ? centroid.longitude : null,
-            posted_at: posted,
-          })
-        );
-      }
-      return out;
-    }
-
-    lastErr = r;
-    console.log(`DEBUG: Redfin ${label} failed (${r.code})`);
   }
-
-  // All approaches failed
-  let detail = "";
-  console.log(`DEBUG: Redfin response: ${lastErr.text.slice(0, 300)}`);
-  try {
-    const err = JSON.parse(stripRedfin(lastErr.text));
-    detail = err.errorMessage || err.message || JSON.stringify(err).slice(0, 100);
-  } catch (e) {
-    detail = "parse failed";
-  }
-  throw new Error("rentals HTTP " + (lastErr.code || lastErr.error) + (detail ? ": " + detail : ""));
+  return out;
 }
 
 async function scrapeRedfin() {
@@ -980,7 +952,7 @@ async function main() {
 
   const SOURCES = [
     ["craigslist", scrapeCraigslist],
-    // ["redfin", scrapeRedfin],  // API changed; temporarily disabled
+    ["redfin", scrapeRedfin],
     ["zillow", scrapeZillow],
     ["trulia", scrapeTrulia],
     ["apartments_com", scrapeApartments],
