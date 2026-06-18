@@ -196,32 +196,42 @@ function setStatus(msg, kind) {
 // ---------------------------------------------------------------------------
 async function init() {
   loadSettingsForm();
+
+  // Gather both data sources, then show whichever is freshest (by
+  // generated_at) and actually has listings. This way a freshly-pushed
+  // scraper file (docs/data/listings.json, written by the Scriptable app or
+  // `make crawl`) wins over a stale or empty in-browser API cache.
+  const candidates = [];
+
   const cached = localStorage.getItem(CACHE_KEY);
   if (cached) {
     try {
       const data = JSON.parse(cached);
-      ALL = data.listings || [];
-      renderMeta(data, "cache");
-      buildSourceFilters();
-      render();
-      return;
+      if (data.listings && data.listings.length) candidates.push({ data, mode: "cache" });
     } catch (_) {}
   }
-  // No live cache yet — fall back to any committed crawl data (the optional
-  // `make crawl` path writes docs/data/listings.json).
+
   try {
     const resp = await fetch("./data/listings.json", { cache: "no-store" });
     const data = await resp.json();
-    if (data.listings && data.listings.length) {
-      ALL = data.listings;
-      renderMeta(data, "cache");
-      buildSourceFilters();
-      render();
-      return;
-    }
+    if (data.listings && data.listings.length) candidates.push({ data, mode: "scraped" });
   } catch (_) {}
+
+  if (candidates.length) {
+    candidates.sort(
+      (a, b) =>
+        new Date(b.data.generated_at || 0) - new Date(a.data.generated_at || 0)
+    );
+    const best = candidates[0];
+    ALL = best.data.listings || [];
+    renderMeta(best.data, best.mode === "scraped" ? "cache" : "cache");
+    buildSourceFilters();
+    render();
+    return;
+  }
+
   document.getElementById("meta").textContent =
-    "No listings yet — add an API key (⚙) and tap ⚡ Fetch live.";
+    "No listings yet — add an API key (⚙) and tap ⚡ Fetch live, or run the Scriptable app.";
 }
 
 document.getElementById("fetchBtn").addEventListener("click", fetchLive);
