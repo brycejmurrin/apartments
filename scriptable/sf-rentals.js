@@ -454,6 +454,7 @@ async function redfinRegion() {
 
 async function redfinOnce() {
   const regionId = await redfinRegion();
+  console.log("DEBUG: Redfin regionId=" + regionId);
   const q = [
     "al=1",
     `region_id=${regionId}`,
@@ -467,12 +468,23 @@ async function redfinOnce() {
     .concat(CRITERIA.minBeds != null ? [`min_beds=${CRITERIA.minBeds}`] : [])
     .concat(CRITERIA.maxBeds != null ? [`max_beds=${CRITERIA.maxBeds}`] : [])
     .join("&");
+  const url = "https://www.redfin.com/stingray/api/v1/search/rentals?" + q;
+  console.log("DEBUG: Redfin URL=" + url.substring(0, 120) + "...");
   const r = await fetchJSON(
-    "https://www.redfin.com/stingray/api/v1/search/rentals?" + q,
-    { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" },
+    url,
+    {
+      Accept: "application/json, text/plain, */*",
+      Referer: "https://www.redfin.com/",
+      Origin: "https://www.redfin.com"
+    },
     (t) => t.indexOf("homeData") >= 0 || t.indexOf('"homes"') >= 0
   );
-  if (r.code >= 400 || r.error) throw new Error("rentals HTTP " + (r.code || r.error));
+  if (r.code >= 400 || r.error) {
+    console.log("DEBUG: Redfin rentals failed: code=" + r.code + " error=" + r.error + " text.len=" + (r.text || "").length);
+    console.log("DEBUG: Redfin response start: " + (r.text || "").substring(0, 300));
+    throw new Error("rentals HTTP " + (r.code || r.error));
+  }
+  console.log("DEBUG: Redfin rentals success: code=" + r.code + " text.len=" + (r.text || "").length);
 
   const data = JSON.parse(stripRedfin(r.text));
   const homes = data.homes || (data.payload && data.payload.homes) || [];
