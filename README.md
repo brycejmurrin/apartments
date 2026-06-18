@@ -4,7 +4,22 @@ A free, no-paid-services rental crawler for **2-bedroom apartments in San
 Francisco** across Craigslist, Redfin, Zillow, Trulia and Apartments.com, with a
 static GitHub Pages dashboard to browse the results.
 
-## How it works
+## Two ways to use it
+
+**1. From the page on your phone (no setup, recommended).** The dashboard pulls
+live listings from a rental-data **API** directly in your browser. Get a free
+[RentCast API key](https://app.rentcast.io/app/api) (50 requests/month free),
+open the site, tap **⚙ API key** and paste it, then tap **⚡ Fetch live**. The
+key is stored only on your device — never committed or uploaded. This works
+because an API authenticates by key, not by IP, so there's no datacenter-IP
+block and no scraping involved.
+
+**2. Scrape all five sites locally (power option).** Run the crawler on your own
+machine (a residential IP) to pull Craigslist/Redfin/Zillow/Trulia/Apartments.com
+into `docs/data/listings.json`; the page shows that data if no live API results
+are cached. See "Local crawler" below.
+
+## How the local crawler works
 
 No GitHub Actions, no servers. You run the crawler on **your own machine**, it
 commits `docs/data/listings.json`, and GitHub Pages serves the static dashboard

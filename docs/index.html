@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SF Rentals — Multi-site Crawler</title>
+  <title>SF Rentals</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -13,9 +13,32 @@
       <p id="meta" class="muted">Loading…</p>
     </div>
     <div class="actions">
-      <button id="refreshBtn" title="Reload the latest crawled data">↻ Refresh</button>
+      <button id="fetchBtn" title="Fetch live listings from the rental API">⚡ Fetch live</button>
+      <button id="settingsBtn" class="ghost">⚙ API key</button>
     </div>
   </header>
+
+  <section id="settings" class="panel hidden">
+    <h2>Rental data API</h2>
+    <p class="muted">
+      This page pulls live listings from a rental-data API right here in your
+      browser — no server, no scraping. Get a free API key from
+      <a href="https://app.rentcast.io/app/api" target="_blank" rel="noopener">RentCast</a>
+      (free tier: 50 requests/month) and paste it below. The key is stored only
+      on this device (your browser's localStorage) and is never uploaded or
+      committed anywhere.
+    </p>
+    <label>API key <input id="apiKey" type="password" placeholder="rentcast api key…" /></label>
+    <details>
+      <summary class="muted">Advanced (usually leave as-is)</summary>
+      <label>API base URL <input id="apiBase" placeholder="https://api.rentcast.io/v1" /></label>
+      <label>CORS proxy prefix (only if direct calls are blocked)
+        <input id="apiProxy" placeholder="(leave empty)" /></label>
+    </details>
+    <div class="actions">
+      <button id="saveSettings">Save</button>
+    </div>
+  </section>
 
   <section class="filters">
     <input id="search" type="search" placeholder="Search title / neighborhood…" />
@@ -43,11 +66,9 @@
   </table>
 
   <footer class="muted">
-    This page just displays the latest crawl results from
-    <code>docs/data/listings.json</code>. The crawler runs on your own machine
-    (a residential IP — listing sites block datacenter/cloud IPs). To update the
-    data: <code>make crawl</code> (runs the crawler and pushes), then this page
-    refreshes within a minute. See the repo README for setup.
+    Listings come live from a rental-data API, fetched in your browser and cached
+    on this device. Tap <strong>⚡ Fetch live</strong> to refresh. First time?
+    Add a free API key under <strong>⚙ API key</strong>.
   </footer>
 
   <script src="./app.js"></script>
