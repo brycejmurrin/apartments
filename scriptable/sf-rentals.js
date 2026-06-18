@@ -244,21 +244,34 @@ function stripRedfin(t) {
   return (t || "").replace(/^\{\}&&/, "");
 }
 
+// Known Redfin city region IDs (region_type 6), used when the autocomplete
+// endpoint is blocked. Add more here if you change CRITERIA.city.
+const REDFIN_REGION = { "san francisco,ca": "17151" };
+
 async function redfinRegion() {
-  const r = await httpGet(
-    "https://www.redfin.com/stingray/do/location-autocomplete?location=" +
-      encodeURIComponent(`${CRITERIA.city}, ${CRITERIA.state}`) +
-      "&v=2&al=1",
-    { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" }
-  );
-  if (r.code >= 400 || r.error) throw new Error("region HTTP " + (r.code || r.error));
-  const data = JSON.parse(stripRedfin(r.text));
-  for (const sec of (data.payload && data.payload.sections) || []) {
-    for (const row of sec.rows || []) {
-      if (String(row.type) === "6" && row.id) return row.id.split("_").pop();
+  // Primary: ask Redfin's autocomplete. This path is sometimes 403'd even from
+  // a residential IP, so failure falls through to the known-ID map below.
+  try {
+    const r = await httpGet(
+      "https://www.redfin.com/stingray/do/location-autocomplete?location=" +
+        encodeURIComponent(`${CRITERIA.city}, ${CRITERIA.state}`) +
+        "&v=2&al=1",
+      { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" }
+    );
+    if (!(r.code >= 400 || r.error)) {
+      const data = JSON.parse(stripRedfin(r.text));
+      for (const sec of (data.payload && data.payload.sections) || []) {
+        for (const row of sec.rows || []) {
+          if (String(row.type) === "6" && row.id) return row.id.split("_").pop();
+        }
+      }
     }
-  }
-  throw new Error("no region id");
+  } catch (_) {}
+
+  // Fallback: hardcoded region id (bypasses the blocked autocomplete endpoint).
+  const key = `${CRITERIA.city},${CRITERIA.state}`.toLowerCase().replace(/\s+/g, "");
+  if (REDFIN_REGION[key]) return REDFIN_REGION[key];
+  throw new Error("no region id (autocomplete blocked, no fallback)");
 }
 
 async function redfinOnce() {
@@ -539,6 +552,34 @@ async function scrapeApartments() {
       }
     }
   }
+  // Fallback: parse placard cards straight from the HTML when JSON-LD is
+  // missing (Apartments.com sometimes ships listings only as markup).
+  if (!out.length) {
+    const cards = r.text.match(/<article[^>]*class="[^"]*placard[^"]*"[\s\S]*?<\/article>/gi) || [];
+    for (const card of cards) {
+      const u = (card.match(/data-url="([^"]+)"/) || [])[1];
+      if (!u || seen.has(u)) continue;
+      seen.add(u);
+      const titleM =
+        card.match(/class="[^"]*(?:js-placardTitle|property-title)[^"]*"[^>]*>([\s\S]*?)</i) ||
+        card.match(/data-listingid="[^"]*"[^>]*aria-label="([^"]+)"/i);
+      const priceM = card.match(/class="[^"]*(?:property-pricing|price-range)[^"]*"[^>]*>([\s\S]*?)</i);
+      const bedsM = card.match(/class="[^"]*(?:property-beds|bed-range)[^"]*"[^>]*>([\s\S]*?)</i);
+      const addrM = card.match(/class="[^"]*property-address[^"]*"[^>]*>([\s\S]*?)</i);
+      out.push(
+        listing({
+          source: "apartments_com",
+          source_id: (card.match(/data-listingid="([^"]+)"/) || [])[1] || idFromUrl(u),
+          url: u.startsWith("/") ? "https://www.apartments.com" + u : u,
+          title: titleM ? decodeEntities(titleM[1]).trim() : "Apartments.com listing",
+          price: priceM ? parsePrice(decodeEntities(priceM[1])) : null,
+          beds: bedsM ? parseBeds(decodeEntities(bedsM[1])) : null,
+          address: addrM ? decodeEntities(addrM[1]).trim() : null,
+        })
+      );
+    }
+  }
+
   if (!out.length) throw new Error("0 listings (Cloudflare challenge?)");
   return out;
 }
