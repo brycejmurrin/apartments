@@ -1,7 +1,7 @@
 "use strict";
 
 const WORKFLOW_FILE = "crawl.yml";
-const DEFAULT_BRANCH = "claude/multi-site-rental-scraper-kto2c3";
+const DEFAULT_BRANCH = "main";
 
 let ALL = [];
 let sortKey = "posted_at";

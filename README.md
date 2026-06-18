@@ -59,9 +59,11 @@ Tune the search in `scraper/config.py`, or via env vars:
 
 ## Set up the GitHub Pages dashboard
 
-1. **Enable Pages**: repo **Settings → Pages → Build from a branch**, and pick
-   this branch with the **`/docs`** folder. Your site appears at
-   `https://<owner>.github.io/<repo>/`.
+1. **Pages deploys automatically**: `.github/workflows/pages.yml` enables Pages
+   and publishes `docs/` on every push to `main` and after every crawl. Your
+   site appears at `https://<owner>.github.io/<repo>/`. If your org blocks
+   auto-enablement, toggle it once under **Settings → Pages → Source: GitHub
+   Actions**.
 2. **Launch crawls from the page**: click **⚙ Settings** on the dashboard and
    paste a GitHub **fine-grained personal access token** scoped to this repo
    with **Actions: Read and write**. It's stored only in your browser's
