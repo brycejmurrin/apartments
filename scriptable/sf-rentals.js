@@ -475,10 +475,13 @@ async function redfinOnce() {
   );
   if (r.code >= 400 || r.error) {
     let detail = "";
+    console.log(`DEBUG: Redfin response: ${r.text.slice(0, 300)}`);
     try {
       const err = JSON.parse(stripRedfin(r.text));
-      detail = err.errorMessage || err.message || "";
-    } catch (_) {}
+      detail = err.errorMessage || err.message || JSON.stringify(err).slice(0, 100);
+    } catch (e) {
+      detail = "parse failed";
+    }
     throw new Error("rentals HTTP " + (r.code || r.error) + (detail ? ": " + detail : ""));
   }
 
