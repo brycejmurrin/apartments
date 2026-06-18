@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T10:43:51.251Z",
+  "generated_at": "2026-06-18T10:43:56.277Z",
   "criteria": {
     "city": "San Francisco",
     "state": "CA",
@@ -11,7 +11,7 @@
       "status": "ok",
       "count": 360,
       "error": null,
-      "last_success": "2026-06-18T10:43:47.544Z"
+      "last_success": "2026-06-18T10:43:52.627Z"
     },
     "redfin": {
       "status": "blocked",
@@ -23,13 +23,13 @@
       "status": "ok",
       "count": 41,
       "error": null,
-      "last_success": "2026-06-18T10:43:49.332Z"
+      "last_success": "2026-06-18T10:43:54.756Z"
     },
     "trulia": {
       "status": "ok",
       "count": 40,
       "error": null,
-      "last_success": "2026-06-18T10:43:50.399Z"
+      "last_success": "2026-06-18T10:43:55.714Z"
     },
     "apartments_com": {
       "status": "blocked",
@@ -54,7 +54,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.533Z",
+      "scraped_at": "2026-06-18T10:43:52.615Z",
       "stale": false
     },
     {
@@ -71,7 +71,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.533Z",
+      "scraped_at": "2026-06-18T10:43:52.615Z",
       "stale": false
     },
     {
@@ -88,7 +88,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -105,7 +105,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -122,7 +122,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -139,7 +139,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -156,7 +156,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -173,7 +173,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -190,7 +190,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -207,7 +207,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -224,7 +224,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -241,7 +241,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -258,7 +258,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -275,7 +275,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -292,7 +292,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -309,7 +309,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -326,7 +326,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -343,7 +343,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -360,7 +360,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -377,7 +377,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -394,7 +394,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -411,7 +411,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -428,7 +428,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -445,7 +445,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -462,7 +462,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -479,7 +479,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -496,7 +496,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -513,7 +513,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -530,7 +530,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -547,7 +547,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -564,7 +564,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -581,7 +581,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -598,7 +598,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -615,7 +615,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.616Z",
       "stale": false
     },
     {
@@ -632,7 +632,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -649,7 +649,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.534Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -666,7 +666,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -683,7 +683,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -700,7 +700,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -717,7 +717,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -734,7 +734,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -751,7 +751,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -768,7 +768,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -785,7 +785,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -802,7 +802,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -819,7 +819,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -836,7 +836,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -853,7 +853,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -870,7 +870,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -887,7 +887,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -904,7 +904,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -921,7 +921,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -938,7 +938,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -955,7 +955,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -972,7 +972,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -989,7 +989,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1006,7 +1006,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1023,7 +1023,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1040,7 +1040,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1057,7 +1057,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1074,7 +1074,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1091,7 +1091,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1108,7 +1108,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1125,7 +1125,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1142,7 +1142,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1159,7 +1159,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1176,7 +1176,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1193,7 +1193,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.617Z",
       "stale": false
     },
     {
@@ -1210,7 +1210,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1227,7 +1227,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1244,7 +1244,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1261,7 +1261,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1278,7 +1278,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1295,7 +1295,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1312,7 +1312,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1329,7 +1329,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.535Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1346,7 +1346,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1363,7 +1363,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1380,7 +1380,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1397,7 +1397,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1414,7 +1414,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1431,7 +1431,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1448,7 +1448,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1465,7 +1465,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1482,7 +1482,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1499,7 +1499,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1516,7 +1516,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1533,7 +1533,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1550,7 +1550,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1567,7 +1567,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1584,7 +1584,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1601,7 +1601,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1618,7 +1618,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1635,7 +1635,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1652,7 +1652,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1669,7 +1669,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1686,7 +1686,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1703,7 +1703,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1720,7 +1720,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1737,7 +1737,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1754,7 +1754,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1771,7 +1771,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1788,7 +1788,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.618Z",
       "stale": false
     },
     {
@@ -1805,7 +1805,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1822,7 +1822,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1839,7 +1839,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1856,7 +1856,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1873,7 +1873,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1890,7 +1890,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1907,7 +1907,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1924,7 +1924,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1941,7 +1941,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1958,7 +1958,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1975,7 +1975,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.536Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -1992,7 +1992,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2009,7 +2009,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2026,7 +2026,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2043,7 +2043,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2060,7 +2060,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2077,7 +2077,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2094,7 +2094,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2111,7 +2111,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2128,7 +2128,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2145,7 +2145,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2162,7 +2162,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2179,7 +2179,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2196,7 +2196,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2213,7 +2213,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2230,7 +2230,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2247,7 +2247,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2264,7 +2264,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2281,7 +2281,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2298,7 +2298,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2315,7 +2315,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2332,7 +2332,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2349,7 +2349,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2366,7 +2366,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2383,7 +2383,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2400,7 +2400,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.619Z",
       "stale": false
     },
     {
@@ -2417,7 +2417,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2434,7 +2434,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2451,7 +2451,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2468,7 +2468,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2485,7 +2485,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2502,7 +2502,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2519,7 +2519,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2536,7 +2536,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2553,7 +2553,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2570,7 +2570,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.537Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2587,7 +2587,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2604,7 +2604,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2621,7 +2621,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2638,7 +2638,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2655,7 +2655,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2672,7 +2672,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2689,7 +2689,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2706,7 +2706,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2723,7 +2723,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2740,7 +2740,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2757,7 +2757,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2774,7 +2774,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2791,7 +2791,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2808,7 +2808,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2825,7 +2825,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2842,7 +2842,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2859,7 +2859,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2876,7 +2876,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2893,7 +2893,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2910,7 +2910,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2927,7 +2927,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2944,7 +2944,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2961,7 +2961,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2978,7 +2978,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -2995,7 +2995,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.620Z",
       "stale": false
     },
     {
@@ -3012,7 +3012,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3029,7 +3029,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3046,7 +3046,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3063,7 +3063,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3080,7 +3080,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3097,7 +3097,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3114,7 +3114,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3131,7 +3131,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3148,7 +3148,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3165,7 +3165,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3182,7 +3182,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3199,7 +3199,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3216,7 +3216,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.538Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3233,7 +3233,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3250,7 +3250,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3267,7 +3267,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3284,7 +3284,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3301,7 +3301,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3318,7 +3318,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3335,7 +3335,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3352,7 +3352,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3369,7 +3369,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3386,7 +3386,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3403,7 +3403,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3420,7 +3420,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.539Z",
+      "scraped_at": "2026-06-18T10:43:52.621Z",
       "stale": false
     },
     {
@@ -3437,7 +3437,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.622Z",
       "stale": false
     },
     {
@@ -3454,7 +3454,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3471,7 +3471,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3488,7 +3488,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3505,7 +3505,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3522,7 +3522,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3539,7 +3539,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3556,7 +3556,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3573,7 +3573,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3590,7 +3590,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3607,7 +3607,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3624,7 +3624,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3641,7 +3641,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3658,7 +3658,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3675,7 +3675,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3692,7 +3692,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3709,7 +3709,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3726,7 +3726,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3743,7 +3743,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3760,7 +3760,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3777,7 +3777,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3794,7 +3794,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3811,7 +3811,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.540Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3828,7 +3828,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3845,7 +3845,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3862,7 +3862,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3879,7 +3879,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3896,7 +3896,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3913,7 +3913,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3930,7 +3930,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3947,7 +3947,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3964,7 +3964,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3981,7 +3981,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -3998,7 +3998,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -4015,7 +4015,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -4032,7 +4032,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -4049,7 +4049,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -4066,7 +4066,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -4083,7 +4083,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -4100,7 +4100,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.623Z",
       "stale": false
     },
     {
@@ -4117,7 +4117,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4134,7 +4134,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4151,7 +4151,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4168,7 +4168,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4185,7 +4185,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4202,7 +4202,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4219,7 +4219,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4236,7 +4236,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4253,7 +4253,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4270,7 +4270,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4287,7 +4287,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4304,7 +4304,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4321,7 +4321,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4338,7 +4338,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4355,7 +4355,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4372,7 +4372,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4389,7 +4389,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4406,7 +4406,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4423,7 +4423,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4440,7 +4440,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4457,7 +4457,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4474,7 +4474,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.541Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4491,7 +4491,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4508,7 +4508,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4525,7 +4525,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4542,7 +4542,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4559,7 +4559,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4576,7 +4576,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4593,7 +4593,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4610,7 +4610,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4627,7 +4627,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4644,7 +4644,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4661,7 +4661,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4678,7 +4678,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4695,7 +4695,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4712,7 +4712,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4729,7 +4729,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4746,7 +4746,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4763,7 +4763,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4780,7 +4780,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.624Z",
       "stale": false
     },
     {
@@ -4797,7 +4797,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4814,7 +4814,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4831,7 +4831,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4848,7 +4848,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4865,7 +4865,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4882,7 +4882,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4899,7 +4899,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4916,7 +4916,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4933,7 +4933,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4950,7 +4950,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4967,7 +4967,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -4984,7 +4984,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5001,7 +5001,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5018,7 +5018,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5035,7 +5035,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5052,7 +5052,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5069,7 +5069,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5086,7 +5086,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5103,7 +5103,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.542Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5120,7 +5120,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5137,7 +5137,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5154,7 +5154,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5171,7 +5171,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5188,7 +5188,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5205,7 +5205,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5222,7 +5222,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5239,7 +5239,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5256,7 +5256,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5273,7 +5273,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5290,7 +5290,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5307,7 +5307,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5324,7 +5324,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5341,7 +5341,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5358,7 +5358,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5375,7 +5375,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5392,7 +5392,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5409,7 +5409,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.625Z",
       "stale": false
     },
     {
@@ -5426,7 +5426,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5443,7 +5443,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5460,7 +5460,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5477,7 +5477,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5494,7 +5494,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5511,7 +5511,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5528,7 +5528,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5545,7 +5545,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5562,7 +5562,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5579,7 +5579,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5596,7 +5596,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5613,7 +5613,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5630,7 +5630,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5647,7 +5647,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5664,7 +5664,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5681,7 +5681,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5698,7 +5698,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5715,7 +5715,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5732,7 +5732,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5749,7 +5749,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.543Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5766,7 +5766,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5783,7 +5783,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5800,7 +5800,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5817,7 +5817,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5834,7 +5834,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5851,7 +5851,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5868,7 +5868,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5885,7 +5885,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5902,7 +5902,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5919,7 +5919,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5936,7 +5936,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5953,7 +5953,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5970,7 +5970,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -5987,7 +5987,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -6004,7 +6004,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.626Z",
       "stale": false
     },
     {
@@ -6021,7 +6021,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.627Z",
       "stale": false
     },
     {
@@ -6038,7 +6038,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.627Z",
       "stale": false
     },
     {
@@ -6055,7 +6055,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.627Z",
       "stale": false
     },
     {
@@ -6072,7 +6072,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.627Z",
       "stale": false
     },
     {
@@ -6089,7 +6089,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.627Z",
       "stale": false
     },
     {
@@ -6106,7 +6106,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.627Z",
       "stale": false
     },
     {
@@ -6123,7 +6123,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.627Z",
       "stale": false
     },
     {
@@ -6140,7 +6140,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.627Z",
       "stale": false
     },
     {
@@ -6157,7 +6157,7 @@
       "lat": null,
       "lng": null,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:47.544Z",
+      "scraped_at": "2026-06-18T10:43:52.627Z",
       "stale": false
     },
     {
@@ -6174,7 +6174,7 @@
       "lat": 37.77619,
       "lng": -122.41747,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6191,7 +6191,7 @@
       "lat": 37.779945,
       "lng": -122.39696,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6208,7 +6208,7 @@
       "lat": 37.77656,
       "lng": -122.39005,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6225,7 +6225,7 @@
       "lat": 37.779556,
       "lng": -122.403694,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6242,7 +6242,7 @@
       "lat": 37.78719,
       "lng": -122.39636,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6259,7 +6259,7 @@
       "lat": 37.78722,
       "lng": -122.39516,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6276,7 +6276,7 @@
       "lat": 37.819553,
       "lng": -122.37166,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6293,7 +6293,7 @@
       "lat": 37.778446,
       "lng": -122.41362,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6310,7 +6310,7 @@
       "lat": 37.781826,
       "lng": -122.41123,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6327,7 +6327,7 @@
       "lat": 37.787388,
       "lng": -122.39276,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6344,7 +6344,7 @@
       "lat": 37.785362,
       "lng": -122.39022,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6361,7 +6361,7 @@
       "lat": 37.772366,
       "lng": -122.39705,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6378,7 +6378,7 @@
       "lat": 37.819115,
       "lng": -122.372475,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6395,7 +6395,7 @@
       "lat": 37.777885,
       "lng": -122.41319,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6412,7 +6412,7 @@
       "lat": 37.778366,
       "lng": -122.412834,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6429,7 +6429,7 @@
       "lat": 37.787735,
       "lng": -122.39177,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6446,7 +6446,7 @@
       "lat": 37.7728,
       "lng": -122.405754,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6463,7 +6463,7 @@
       "lat": 37.783073,
       "lng": -122.42165,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6480,7 +6480,7 @@
       "lat": 37.77515,
       "lng": -122.40013,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6497,7 +6497,7 @@
       "lat": 37.796684,
       "lng": -122.39798,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6514,7 +6514,7 @@
       "lat": 37.774788,
       "lng": -122.4207,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6531,7 +6531,7 @@
       "lat": 37.785236,
       "lng": -122.43545,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6548,7 +6548,7 @@
       "lat": 37.773457,
       "lng": -122.42031,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6565,7 +6565,7 @@
       "lat": 37.778263,
       "lng": -122.40473,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6582,7 +6582,7 @@
       "lat": 37.787052,
       "lng": -122.39218,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.755Z",
       "stale": false
     },
     {
@@ -6599,7 +6599,7 @@
       "lat": 37.77439,
       "lng": -122.39022,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6616,7 +6616,7 @@
       "lat": 37.790813,
       "lng": -122.41031,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6633,7 +6633,7 @@
       "lat": 37.759274,
       "lng": -122.46237,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6650,7 +6650,7 @@
       "lat": 37.773518,
       "lng": -122.40925,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6667,7 +6667,7 @@
       "lat": 37.7679,
       "lng": -122.41954,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6684,7 +6684,7 @@
       "lat": 37.782345,
       "lng": -122.42377,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6701,7 +6701,7 @@
       "lat": 37.784996,
       "lng": -122.413826,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6718,7 +6718,7 @@
       "lat": 37.77321,
       "lng": -122.41189,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6735,7 +6735,7 @@
       "lat": 37.783348,
       "lng": -122.415504,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6752,7 +6752,7 @@
       "lat": 37.804276,
       "lng": -122.44439,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6769,7 +6769,7 @@
       "lat": 37.763515,
       "lng": -122.40768,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6786,7 +6786,7 @@
       "lat": 37.77999,
       "lng": -122.40415,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6803,7 +6803,7 @@
       "lat": 37.75951,
       "lng": -122.38422,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6820,7 +6820,7 @@
       "lat": 37.790485,
       "lng": -122.42664,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6837,7 +6837,7 @@
       "lat": 37.77048,
       "lng": -122.413315,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6854,7 +6854,7 @@
       "lat": 37.781796,
       "lng": -122.39878,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:49.332Z",
+      "scraped_at": "2026-06-18T10:43:54.756Z",
       "stale": false
     },
     {
@@ -6871,7 +6871,7 @@
       "lat": 37.77619,
       "lng": -122.41747,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -6888,7 +6888,7 @@
       "lat": 37.779945,
       "lng": -122.39696,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -6905,7 +6905,7 @@
       "lat": 37.77656,
       "lng": -122.39005,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -6922,7 +6922,7 @@
       "lat": 37.779556,
       "lng": -122.403694,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -6939,7 +6939,7 @@
       "lat": 37.78719,
       "lng": -122.39636,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -6956,7 +6956,7 @@
       "lat": 37.819553,
       "lng": -122.37166,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -6973,7 +6973,7 @@
       "lat": 37.778446,
       "lng": -122.41362,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -6990,7 +6990,7 @@
       "lat": 37.781826,
       "lng": -122.41123,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7007,7 +7007,7 @@
       "lat": 37.787388,
       "lng": -122.39276,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7024,7 +7024,7 @@
       "lat": 37.785362,
       "lng": -122.39022,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7041,7 +7041,7 @@
       "lat": 37.819115,
       "lng": -122.372475,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7058,7 +7058,7 @@
       "lat": 37.787735,
       "lng": -122.39177,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7075,7 +7075,7 @@
       "lat": 37.7728,
       "lng": -122.405754,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7092,7 +7092,7 @@
       "lat": 37.77515,
       "lng": -122.40013,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7109,7 +7109,7 @@
       "lat": 37.796684,
       "lng": -122.39798,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7126,7 +7126,7 @@
       "lat": 37.785236,
       "lng": -122.43545,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7143,7 +7143,7 @@
       "lat": 37.773457,
       "lng": -122.42031,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7160,7 +7160,7 @@
       "lat": 37.787052,
       "lng": -122.39218,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7177,7 +7177,7 @@
       "lat": 37.77439,
       "lng": -122.39022,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7194,7 +7194,7 @@
       "lat": 37.773518,
       "lng": -122.40925,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7211,7 +7211,7 @@
       "lat": 37.804276,
       "lng": -122.44439,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7228,7 +7228,7 @@
       "lat": 37.77999,
       "lng": -122.40415,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7245,7 +7245,7 @@
       "lat": 37.790485,
       "lng": -122.42664,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7262,7 +7262,7 @@
       "lat": 37.77048,
       "lng": -122.413315,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7279,7 +7279,7 @@
       "lat": 37.7933,
       "lng": -122.4207,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7296,7 +7296,7 @@
       "lat": 37.793434,
       "lng": -122.41417,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7313,7 +7313,7 @@
       "lat": 37.782692,
       "lng": -122.43322,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7330,7 +7330,7 @@
       "lat": 37.74446,
       "lng": -122.43854,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7347,7 +7347,7 @@
       "lat": 37.778065,
       "lng": -122.40456,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7364,7 +7364,7 @@
       "lat": 37.77326,
       "lng": -122.39094,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7381,7 +7381,7 @@
       "lat": 37.762688,
       "lng": -122.38836,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7398,7 +7398,7 @@
       "lat": 37.722862,
       "lng": -122.43845,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7415,7 +7415,7 @@
       "lat": 37.760532,
       "lng": -122.416664,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7432,7 +7432,7 @@
       "lat": 37.723972,
       "lng": -122.454994,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7449,7 +7449,7 @@
       "lat": 37.779144,
       "lng": -122.41423,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7466,7 +7466,7 @@
       "lat": 37.7115,
       "lng": -122.3918,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7483,7 +7483,7 @@
       "lat": 37.769627,
       "lng": -122.40335,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7500,7 +7500,7 @@
       "lat": 37.78854,
       "lng": -122.416176,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7517,7 +7517,7 @@
       "lat": 37.769756,
       "lng": -122.429634,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     },
     {
@@ -7534,7 +7534,7 @@
       "lat": 37.773052,
       "lng": -122.397125,
       "posted_at": null,
-      "scraped_at": "2026-06-18T10:43:50.399Z",
+      "scraped_at": "2026-06-18T10:43:55.714Z",
       "stale": false
     }
   ]
