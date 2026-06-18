@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T09:05:24.346304+00:00",
+  "generated_at": "2026-06-18T09:13:41.619365+00:00",
   "criteria": {
     "city": "San Francisco",
     "state": "CA",
@@ -26,7 +26,7 @@
     "zillow": {
       "status": "blocked",
       "count": 0,
-      "error": "403 for https://www.zillow.com/san-francisco-ca/rentals/2-bedrooms/",
+      "error": "403 for https://www.zillow.com/search/GetSearchPageState.htm",
       "last_success": null
     },
     "trulia": {
