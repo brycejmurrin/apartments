@@ -473,7 +473,14 @@ async function redfinOnce() {
     { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" },
     (t) => t.indexOf("homeData") >= 0 || t.indexOf('"homes"') >= 0
   );
-  if (r.code >= 400 || r.error) throw new Error("rentals HTTP " + (r.code || r.error) + " (sz:" + (r.text || "").length + ")");
+  if (r.code >= 400 || r.error) {
+    let detail = "";
+    try {
+      const err = JSON.parse(stripRedfin(r.text));
+      detail = err.errorMessage || err.message || "";
+    } catch (_) {}
+    throw new Error("rentals HTTP " + (r.code || r.error) + (detail ? ": " + detail : ""));
+  }
 
   const data = JSON.parse(stripRedfin(r.text));
   const homes = data.homes || (data.payload && data.payload.homes) || [];
