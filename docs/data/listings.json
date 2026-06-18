@@ -1,14 +1,47 @@
 {
-  "generated_at": null,
+  "generated_at": "2026-06-18T09:05:24.346304+00:00",
   "criteria": {
     "city": "San Francisco",
     "state": "CA",
     "min_bedrooms": 2,
     "max_bedrooms": 2,
     "min_price": null,
-    "max_price": null
+    "max_price": null,
+    "cl_site": "sfbay",
+    "cl_area": "sfc"
   },
-  "sources": {},
+  "sources": {
+    "craigslist": {
+      "status": "blocked",
+      "count": 0,
+      "error": "403 for https://sfbay.craigslist.org/search/sfc/apa",
+      "last_success": null
+    },
+    "redfin": {
+      "status": "blocked",
+      "count": 0,
+      "error": "403 for https://www.redfin.com/stingray/do/location-autocomplete",
+      "last_success": null
+    },
+    "zillow": {
+      "status": "blocked",
+      "count": 0,
+      "error": "403 for https://www.zillow.com/san-francisco-ca/rentals/2-bedrooms/",
+      "last_success": null
+    },
+    "trulia": {
+      "status": "blocked",
+      "count": 0,
+      "error": "403 for https://www.trulia.com/for_rent/San_Francisco,CA/2p_beds/",
+      "last_success": null
+    },
+    "apartments_com": {
+      "status": "blocked",
+      "count": 0,
+      "error": "403 for https://www.apartments.com/san-francisco-ca/2-bedrooms/",
+      "last_success": null
+    }
+  },
   "total": 0,
   "listings": []
 }
