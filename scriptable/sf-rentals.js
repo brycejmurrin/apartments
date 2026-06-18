@@ -36,6 +36,12 @@ function bedFrag(minKey, maxKey) {
   return s;
 }
 
+// How many result pages to pull per source. Zillow/Trulia paginate ~40/page,
+// so a few pages give enough depth to filter by beds/price on the dashboard.
+// Apartments runs in a (slower) WebView, so keep it smaller. Craigslist/Redfin
+// return a big batch in one call and don't paginate here.
+const PAGES = { zillow: 5, trulia: 5, apartments: 3 };
+
 // Minimal, real-looking Safari headers. We deliberately do NOT set
 // Accept-Encoding or Connection — NSURLSession (which Scriptable's Request uses)
 // manages those itself and transparently decompresses gzip; forcing "br" can
@@ -68,6 +74,65 @@ async function httpGet(url, extra) {
     return { code: 0, text: "", error: e.message };
   }
   return { code: (req.response || {}).statusCode || 0, text };
+}
+
+// ---------------------------------------------------------------------------
+// WebView transport — load through a real iOS browser so every source passes
+// its bot wall (Akamai/CloudFront/PerimeterX) and renders complete data. We
+// always try the WebView first, then fall back to a raw HTTP request so we
+// never do worse than the direct path. Widgets can't run a WebView, so the
+// raw path is used there.
+// ---------------------------------------------------------------------------
+const USE_WEBVIEW = true;
+const WV_WAIT_MS = 4000; // time for anti-bot JS + content to settle
+
+async function wvEval(url, js, waitMs) {
+  const wv = new WebView();
+  await wv.loadURL(url);
+  await sleep(waitMs || WV_WAIT_MS);
+  return wv.evaluateJavaScript(js);
+}
+
+// Fetch an HTML page. Returns { code, text } shaped like httpGet.
+async function fetchHTML(url, referer) {
+  if (USE_WEBVIEW && !config.runsInWidget) {
+    try {
+      const html = await wvEval(url, "document.documentElement.outerHTML");
+      if (html && html.length > 1500) return { code: 200, text: html };
+    } catch (e) {
+      /* fall through to raw */
+    }
+  }
+  return httpGet(url, referer ? { Referer: referer } : null);
+}
+
+// Fetch a JSON endpoint through a real browser. We load the endpoint's own
+// origin in a WebView (establishing cookies + a real fingerprint), then run an
+// in-page fetch() to the URL — same-origin, so no CORS, and it returns the raw
+// JSON text (avoiding iOS Safari's interactive JSON viewer mangling innerText).
+async function fetchJSON(url, extra) {
+  if (USE_WEBVIEW && !config.runsInWidget) {
+    try {
+      const origin = (url.match(/^https?:\/\/[^/]+/) || [])[0] || url;
+      const wv = new WebView();
+      await wv.loadURL(origin);
+      await sleep(2500); // let any bot-clearance cookies set
+      const js =
+        "(function(){fetch(" +
+        JSON.stringify(url) +
+        ",{headers:{'Accept':'application/json, text/plain, */*'},credentials:'include'})" +
+        ".then(function(r){return r.text();})" +
+        ".then(function(t){completion(t);})" +
+        ".catch(function(e){completion('__ERR__'+e);});})();";
+      const text = await wv.evaluateJavaScript(js, true); // true = async completion
+      if (typeof text === "string" && text.indexOf("__ERR__") !== 0 && text.trim()) {
+        return { code: 200, text };
+      }
+    } catch (e) {
+      /* fall through to raw */
+    }
+  }
+  return httpGet(url, extra);
 }
 
 // Visit a page to collect cookies (best-effort warm-up).
@@ -148,7 +213,7 @@ async function clFromRss() {
     `${base}/search/${CRITERIA.clArea}/apa` +
     `?availabilityMode=0&format=rss` +
     bedFrag("min_bedrooms", "max_bedrooms");
-  const r = await httpGet(url, { Referer: base + "/", Accept: "application/rss+xml,application/xml,text/xml,*/*" });
+  const r = await fetchHTML(url, base + "/");
   if (r.code >= 400 || r.error) throw new Error("RSS HTTP " + (r.code || r.error));
 
   const out = [];
@@ -186,7 +251,7 @@ async function clFromSapi() {
     "?batch=1-0-360-0-0&cc=US&lang=en&searchPath=apa" +
     "&availabilityMode=0" +
     bedFrag("min_bedrooms", "max_bedrooms");
-  const r = await httpGet(url, {
+  const r = await fetchJSON(url, {
     Accept: "application/json, text/plain, */*",
     Referer: `https://${CRITERIA.clSite}.craigslist.org/`,
     Origin: `https://${CRITERIA.clSite}.craigslist.org`,
@@ -330,7 +395,7 @@ async function redfinRegion() {
   // Primary: ask Redfin's autocomplete. This path is sometimes 403'd even from
   // a residential IP, so failure falls through to the known-ID map below.
   try {
-    const r = await httpGet(
+    const r = await fetchJSON(
       "https://www.redfin.com/stingray/do/location-autocomplete?location=" +
         encodeURIComponent(`${CRITERIA.city}, ${CRITERIA.state}`) +
         "&v=2&al=1",
@@ -367,7 +432,7 @@ async function redfinOnce() {
     .concat(CRITERIA.minBeds != null ? [`min_beds=${CRITERIA.minBeds}`] : [])
     .concat(CRITERIA.maxBeds != null ? [`max_beds=${CRITERIA.maxBeds}`] : [])
     .join("&");
-  const r = await httpGet(
+  const r = await fetchJSON(
     "https://www.redfin.com/stingray/api/v1/search/rentals?" + q,
     { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" }
   );
@@ -462,59 +527,76 @@ function findKeyArray(obj, key, depth) {
   return [];
 }
 
-async function scrapeZillow() {
-  await prime("https://www.zillow.com/");
+function zillowMap(h) {
+  const id = h.zpid || h.id;
+  if (!id) return null;
+  const hi = (h.hdpData && h.hdpData.homeInfo) || {};
+  return listing({
+    source: "zillow",
+    source_id: id,
+    url: h.detailUrl
+      ? h.detailUrl.startsWith("http")
+        ? h.detailUrl
+        : "https://www.zillow.com" + h.detailUrl
+      : "",
+    title: h.address || h.streetAddress || "Zillow rental",
+    price: parsePrice(h.price || h.unformattedPrice || hi.price),
+    beds: h.beds != null ? Number(h.beds) : hi.bedrooms != null ? Number(hi.bedrooms) : null,
+    baths: h.baths != null ? Number(h.baths) : hi.bathrooms != null ? Number(hi.bathrooms) : null,
+    sqft:
+      h.area != null ? Number(h.area) : hi.livingArea != null ? Number(hi.livingArea) : null,
+    address: h.address || hi.streetAddress || null,
+    neighborhood:
+      (h.hdpData && hi.neighborhoodRegion && hi.neighborhoodRegion.name) ||
+      hi.city ||
+      "San Francisco",
+    lat: h.latLong ? h.latLong.latitude : hi.latitude != null ? hi.latitude : null,
+    lng: h.latLong ? h.latLong.longitude : hi.longitude != null ? hi.longitude : null,
+  });
+}
+
+async function zillowPage(pageNum) {
   // beds=min-max (e.g. 2-2). Omit entirely to crawl all bedroom counts.
   const beds =
     CRITERIA.minBeds != null
       ? `?beds=${CRITERIA.minBeds}-${CRITERIA.maxBeds != null ? CRITERIA.maxBeds : ""}`
       : "";
-  const r = await httpGet(
-    "https://www.zillow.com/san-francisco-ca/rentals/" + beds,
-    { Referer: "https://www.zillow.com/" }
+  const pageSeg = pageNum > 1 ? `${pageNum}_p/` : "";
+  const r = await fetchHTML(
+    "https://www.zillow.com/san-francisco-ca/rentals/" + pageSeg + beds,
+    "https://www.zillow.com/"
   );
   if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
-
   const m = r.text.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
   if (!m) throw new Error("no __NEXT_DATA__ (challenged?)");
-  const page = JSON.parse(m[1]);
-  const results = findKeyArray(page, "listResults", 0);
-  if (!results.length) throw new Error("0 list results");
+  const results = findKeyArray(JSON.parse(m[1]), "listResults", 0);
+  return results.map(zillowMap).filter(Boolean);
+}
 
+async function scrapeZillow() {
+  await prime("https://www.zillow.com/");
   const out = [];
-  for (const h of results) {
-    const id = h.zpid || h.id;
-    if (!id) continue;
-    const hi = (h.hdpData && h.hdpData.homeInfo) || {};
-    out.push(
-      listing({
-        source: "zillow",
-        source_id: id,
-        url: h.detailUrl
-          ? h.detailUrl.startsWith("http")
-            ? h.detailUrl
-            : "https://www.zillow.com" + h.detailUrl
-          : "",
-        title: h.address || h.streetAddress || "Zillow rental",
-        price: parsePrice(h.price || h.unformattedPrice || hi.price),
-        beds: h.beds != null ? Number(h.beds) : hi.bedrooms != null ? Number(hi.bedrooms) : null,
-        baths: h.baths != null ? Number(h.baths) : hi.bathrooms != null ? Number(hi.bathrooms) : null,
-        sqft:
-          h.area != null
-            ? Number(h.area)
-            : hi.livingArea != null
-            ? Number(hi.livingArea)
-            : null,
-        address: h.address || hi.streetAddress || null,
-        neighborhood:
-          (h.hdpData && hi.neighborhoodRegion && hi.neighborhoodRegion.name) ||
-          hi.city ||
-          "San Francisco",
-        lat: h.latLong ? h.latLong.latitude : hi.latitude != null ? hi.latitude : null,
-        lng: h.latLong ? h.latLong.longitude : hi.longitude != null ? hi.longitude : null,
-      })
-    );
+  const seen = new Set();
+  for (let p = 1; p <= PAGES.zillow; p++) {
+    let got;
+    try {
+      got = await zillowPage(p);
+    } catch (e) {
+      if (p === 1) throw e; // page 1 failing = source blocked
+      break; // later page failed — keep what we have
+    }
+    let added = 0;
+    for (const l of got) {
+      if (!seen.has(l.source_id)) {
+        seen.add(l.source_id);
+        out.push(l);
+        added++;
+      }
+    }
+    if (!added) break; // no new listings — past the last page
+    await sleep(500);
   }
+  if (!out.length) throw new Error("0 list results");
   return out;
 }
 
@@ -565,53 +647,66 @@ function walkTrulia(node, out, seen, depth) {
   }
 }
 
-async function scrapeTrulia() {
-  await prime("https://www.trulia.com/");
-  const city = CRITERIA.city.replace(/ /g, "_");
-  const url =
-    `https://www.trulia.com/for_rent/${city},${CRITERIA.state}/` +
-    (CRITERIA.minBeds != null ? `${CRITERIA.minBeds}p_beds/` : "");
-  const r = await httpGet(url, { Referer: "https://www.trulia.com/" });
-  if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
+function truliaMap(h, seenUrls) {
+  let url2 = h.url || "";
+  if (url2.startsWith("/")) url2 = "https://www.trulia.com" + url2;
+  if (!url2 || seenUrls.has(url2)) return null;
+  seenUrls.add(url2);
+  const loc = (h.location && typeof h.location === "object" && h.location) || {};
+  const street = loc.streetAddress;
+  const addr =
+    [street, loc.city, loc.stateCode || loc.state].filter(Boolean).join(", ") ||
+    loc.partialLocation ||
+    null;
+  const coords = loc.coordinates || h.coordinates || {};
+  const idm = url2.match(/(\d{5,})\/?$/);
+  return listing({
+    source: "trulia",
+    source_id: idm ? idm[1] : h.providerListingId || idFromUrl(url2),
+    url: url2,
+    title: addr || "Trulia rental",
+    price: truliaNum(h.price),
+    beds: truliaNum(h.bedrooms),
+    baths: truliaNum(h.bathrooms),
+    sqft: truliaNum(h.floorSpace),
+    address: addr,
+    neighborhood: loc.neighborhoodName || null,
+    lat: coords.latitude != null ? Number(coords.latitude) : null,
+    lng: coords.longitude != null ? Number(coords.longitude) : null,
+  });
+}
 
+async function truliaPage(pageNum, seenUrls) {
+  const city = CRITERIA.city.replace(/ /g, "_");
+  const beds = CRITERIA.minBeds != null ? `${CRITERIA.minBeds}p_beds/` : "";
+  const pageSeg = pageNum > 1 ? `${pageNum}_p/` : "";
+  const url = `https://www.trulia.com/for_rent/${city},${CRITERIA.state}/` + beds + pageSeg;
+  const r = await fetchHTML(url, "https://www.trulia.com/");
+  if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
   const m = r.text.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
   if (!m) throw new Error("no __NEXT_DATA__ (challenged?)");
-  const page = JSON.parse(m[1]);
-
   const homes = [];
-  walkTrulia(page, homes, new Set(), 0);
-  if (!homes.length) throw new Error("0 homes");
+  walkTrulia(JSON.parse(m[1]), homes, new Set(), 0);
+  return homes.map((h) => truliaMap(h, seenUrls)).filter(Boolean);
+}
 
+async function scrapeTrulia() {
+  await prime("https://www.trulia.com/");
   const out = [];
   const seenUrls = new Set();
-  for (const h of homes) {
-    let url2 = h.url || "";
-    if (url2.startsWith("/")) url2 = "https://www.trulia.com" + url2;
-    if (!url2 || seenUrls.has(url2)) continue;
-    seenUrls.add(url2);
-    const loc = (h.location && typeof h.location === "object" && h.location) || {};
-    const street = loc.streetAddress;
-    const addr = [street, loc.city, loc.stateCode || loc.state].filter(Boolean).join(", ") ||
-      loc.partialLocation || null;
-    const coords = loc.coordinates || h.coordinates || {};
-    const idm = url2.match(/(\d{5,})\/?$/);
-    out.push(
-      listing({
-        source: "trulia",
-        source_id: idm ? idm[1] : h.providerListingId || idFromUrl(url2),
-        url: url2,
-        title: addr || "Trulia rental",
-        price: truliaNum(h.price),
-        beds: truliaNum(h.bedrooms),
-        baths: truliaNum(h.bathrooms),
-        sqft: truliaNum(h.floorSpace),
-        address: addr,
-        neighborhood: loc.neighborhoodName || null,
-        lat: coords.latitude != null ? Number(coords.latitude) : null,
-        lng: coords.longitude != null ? Number(coords.longitude) : null,
-      })
-    );
+  for (let p = 1; p <= PAGES.trulia; p++) {
+    let got;
+    try {
+      got = await truliaPage(p, seenUrls);
+    } catch (e) {
+      if (p === 1) throw e;
+      break;
+    }
+    if (!got.length) break; // dedupe emptied it → past the last page
+    out.push(...got);
+    await sleep(500);
   }
+  if (!out.length) throw new Error("0 homes");
   return out;
 }
 
@@ -624,96 +719,83 @@ async function scrapeTrulia() {
 // the page there (real TLS + JS + your residential IP), let Akamai clear, then
 // scrape the rendered DOM via evaluateJavaScript. Widgets can't run a WebView,
 // so this source is skipped in widget context.
-async function scrapeApartments() {
-  if (config.runsInWidget) throw new Error("WebView unavailable in widget");
-
-  const city = CRITERIA.city.trim().toLowerCase().replace(/ /g, "-");
-  const url =
-    `https://www.apartments.com/${city}-${CRITERIA.state.toLowerCase()}/` +
-    (CRITERIA.minBeds != null ? `${CRITERIA.minBeds}-bedrooms/` : "");
-
-  const wv = new WebView();
-  await wv.loadURL(url);
-  // Give Akamai's sensor JS time to clear and the listings to render.
-  await sleep(4500);
-
-  // Scrape JSON-LD + placard cards from the live DOM and MERGE them per URL:
-  // placards carry price/beds/address, JSON-LD carries geo/name. Returns JSON.
-  const extractor = `(function(){
-    var map = {};
-    function key(u){ return (u||'').replace(/\\/+$/,''); }
-    function slot(u){ var k=key(u); if(!map[k]) map[k]={url:u}; return map[k]; }
-    function set(o, f, v){ if(v!=null && v!=='' && (o[f]==null||o[f]==='')) o[f]=v; }
-
-    // Placards first (richest pricing/bed data).
-    try {
-      var cards = document.querySelectorAll('article.placard, li.mortar-wrapper article, .placard');
-      for (var c=0;c<cards.length;c++){
-        var a = cards[c];
-        var u = a.getAttribute('data-url');
-        if(!u){ var ln=a.querySelector('a.property-link,a[href]'); u = ln && ln.href; }
-        if(!u) continue;
-        function tx(sel){ var el=a.querySelector(sel); return el?el.textContent.replace(/\\s+/g,' ').trim():null; }
-        var o = slot(u);
-        set(o,'id', a.getAttribute('data-listingid'));
-        set(o,'name', tx('.js-placardTitle, .property-title, .property-name'));
-        set(o,'price', tx('.property-pricing, .price-range, .property-rents'));
-        set(o,'beds', tx('.property-beds, .bed-range'));
-        set(o,'baths', tx('.property-baths, .bath-range'));
-        set(o,'address', tx('.property-address'));
-      }
-    } catch(e){}
-
-    // JSON-LD fills name/address/geo gaps.
-    try {
-      var s = document.querySelectorAll('script[type="application/ld+json"]');
-      for (var i=0;i<s.length;i++){
-        var d; try { d = JSON.parse(s[i].textContent); } catch(e){ continue; }
-        var arr = Array.isArray(d) ? d : [d];
-        for (var j=0;j<arr.length;j++){
-          var e = arr[j]; if(!e||typeof e!=='object') continue;
-          var items = [];
-          if (e['@type']==='SearchResultsPage' && e.about && e.about.length) items = e.about;
-          else if (e.itemListElement && e.itemListElement.length)
-            items = e.itemListElement.map(function(x){ return (x&&x.item)||x; });
-          for (var k=0;k<items.length;k++){
-            var it = items[k]; if(!it||typeof it!=='object') continue;
-            var u = it.url || it['@id']; if(!u) continue;
-            var addr = it.address || {}; var geo = it.geo || {};
-            var o = slot(u);
-            set(o,'name', it.name);
-            set(o,'address', (typeof addr==='string')?addr:(addr.streetAddress||null));
-            set(o,'city', (typeof addr==='object')?(addr.addressLocality||null):null);
-            if(geo.latitude!=null) set(o,'lat', geo.latitude);
-            if(geo.longitude!=null) set(o,'lng', geo.longitude);
-          }
+// Scrape JSON-LD + placard cards from the live DOM and MERGE them per URL:
+// placards carry price/beds/address, JSON-LD carries geo/name. Returns a JSON
+// string. Defined once and reused for each paginated page.
+const APT_EXTRACTOR = `(function(){
+  var map = {};
+  function key(u){ return (u||'').replace(/\\/+$/,''); }
+  function slot(u){ var k=key(u); if(!map[k]) map[k]={url:u}; return map[k]; }
+  function set(o, f, v){ if(v!=null && v!=='' && (o[f]==null||o[f]==='')) o[f]=v; }
+  try {
+    var cards = document.querySelectorAll('article.placard, li.mortar-wrapper article, .placard');
+    for (var c=0;c<cards.length;c++){
+      var a = cards[c];
+      var u = a.getAttribute('data-url');
+      if(!u){ var ln=a.querySelector('a.property-link,a[href]'); u = ln && ln.href; }
+      if(!u) continue;
+      function tx(sel){ var el=a.querySelector(sel); return el?el.textContent.replace(/\\s+/g,' ').trim():null; }
+      var o = slot(u);
+      set(o,'id', a.getAttribute('data-listingid'));
+      set(o,'name', tx('.js-placardTitle, .property-title, .property-name'));
+      set(o,'price', tx('.property-pricing, .price-range, .property-rents'));
+      set(o,'beds', tx('.property-beds, .bed-range'));
+      set(o,'baths', tx('.property-baths, .bath-range'));
+      set(o,'address', tx('.property-address'));
+    }
+  } catch(e){}
+  try {
+    var s = document.querySelectorAll('script[type="application/ld+json"]');
+    for (var i=0;i<s.length;i++){
+      var d; try { d = JSON.parse(s[i].textContent); } catch(e){ continue; }
+      var arr = Array.isArray(d) ? d : [d];
+      for (var j=0;j<arr.length;j++){
+        var e = arr[j]; if(!e||typeof e!=='object') continue;
+        var items = [];
+        if (e['@type']==='SearchResultsPage' && e.about && e.about.length) items = e.about;
+        else if (e.itemListElement && e.itemListElement.length)
+          items = e.itemListElement.map(function(x){ return (x&&x.item)||x; });
+        for (var k=0;k<items.length;k++){
+          var it = items[k]; if(!it||typeof it!=='object') continue;
+          var u = it.url || it['@id']; if(!u) continue;
+          var addr = it.address || {}; var geo = it.geo || {};
+          var o = slot(u);
+          set(o,'name', it.name);
+          set(o,'address', (typeof addr==='string')?addr:(addr.streetAddress||null));
+          set(o,'city', (typeof addr==='object')?(addr.addressLocality||null):null);
+          if(geo.latitude!=null) set(o,'lat', geo.latitude);
+          if(geo.longitude!=null) set(o,'lng', geo.longitude);
         }
       }
-    } catch(e){}
+    }
+  } catch(e){}
+  var out = [];
+  for (var kk in map) out.push(map[kk]);
+  return JSON.stringify({ count: out.length, title: document.title || '', items: out });
+})();`;
 
-    var out = [];
-    for (var kk in map) out.push(map[kk]);
-    return JSON.stringify({ ok: out.length>0, count: out.length,
-      title: document.title || '', items: out });
-  })();`;
+async function apartmentsPage(pageNum, seen, out) {
+  const city = CRITERIA.city.trim().toLowerCase().replace(/ /g, "-");
+  const bedSeg = CRITERIA.minBeds != null ? `${CRITERIA.minBeds}-bedrooms/` : "";
+  const pageSeg = pageNum > 1 ? `${pageNum}/` : "";
+  const url =
+    `https://www.apartments.com/${city}-${CRITERIA.state.toLowerCase()}/` + bedSeg + pageSeg;
 
-  let parsed;
-  try {
-    const res = await wv.evaluateJavaScript(extractor);
-    parsed = JSON.parse(res);
-  } catch (e) {
-    throw new Error("WebView eval failed: " + e.message);
-  }
-
+  const parsed = JSON.parse(await wvEval(url, APT_EXTRACTOR, 4500));
   if (!parsed.items || !parsed.items.length) {
-    // Title often reveals a challenge ("Access Denied" / "Pardon Our Interruption").
-    throw new Error("0 listings (page: " + (parsed.title || "?").slice(0, 40) + ")");
+    if (pageNum === 1)
+      throw new Error("0 listings (page: " + (parsed.title || "?").slice(0, 40) + ")");
+    return 0; // later page empty → past the end
   }
 
-  const out = [];
+  let added = 0;
   for (const it of parsed.items) {
     let u = it.url;
     if (u && u.startsWith("/")) u = "https://www.apartments.com" + u;
+    const k = (u || "").replace(/\/+$/, "");
+    if (seen.has(k)) continue;
+    seen.add(k);
+    added++;
     out.push(
       listing({
         source: "apartments_com",
@@ -730,6 +812,18 @@ async function scrapeApartments() {
         lng: it.lng != null ? Number(it.lng) : null,
       })
     );
+  }
+  return added;
+}
+
+async function scrapeApartments() {
+  if (config.runsInWidget) throw new Error("WebView unavailable in widget");
+  const out = [];
+  const seen = new Set();
+  for (let p = 1; p <= PAGES.apartments; p++) {
+    const added = await apartmentsPage(p, seen, out);
+    if (!added) break;
+    await sleep(400);
   }
   return out;
 }

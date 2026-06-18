@@ -9,25 +9,27 @@ It scrapes **Craigslist, Redfin, Zillow, Trulia and Apartments.com**. Each
 source runs independently and degrades on its own — if one is blocked the rest
 still load. The result alert shows the exact status (and error) per source.
 
-How each source is fetched:
+**Everything runs through a real WebView.** Every source is fetched inside
+Scriptable's real iOS **WebView** — a genuine Safari engine on your residential
+IP — so each one clears its bot wall (Akamai/CloudFront/PerimeterX) the same way
+a normal browser does, and we read the fully-rendered data. If a WebView load
+ever fails, the script automatically falls back to a raw HTTP request, so it
+never does worse than before.
 
-| Source | Method |
+| Source | What we read in the WebView |
 |---|---|
-| Craigslist | RSS feed, then the modern `sapi.craigslist.org` JSON API |
-| Redfin | internal `stingray` JSON API (hardcoded SF region id when the autocomplete endpoint is blocked) |
-| Zillow | `__NEXT_DATA__` JSON embedded in the search page |
-| Trulia | `__NEXT_DATA__` JSON embedded in the search page |
-| Apartments.com | **a real WebView** — see below |
+| Craigslist | RSS feed (rich titles + dates), then the `sapi` JSON API as fallback |
+| Redfin | in-page `fetch()` of the `stingray` rentals JSON (hardcoded SF region id if autocomplete is unavailable) |
+| Zillow | `__NEXT_DATA__` JSON in the rendered search page |
+| Trulia | `__NEXT_DATA__` JSON in the rendered search page |
+| Apartments.com | placard cards + JSON-LD scraped from the rendered DOM |
 
-**Apartments.com is special.** It's behind Akamai Bot Manager, which 403s any
-raw HTTP request because there's no valid `_abck` sensor cookie (that cookie is
-minted by executing Akamai's obfuscated JavaScript). So instead of an HTTP
-request, the script loads the page in Scriptable's real iOS **WebView** — a
-genuine Safari engine on your residential IP — lets Akamai's JS run and clear,
-then scrapes the rendered DOM. This is the only reliable free way to get
-Apartments.com from a phone. (WebViews can't run inside a home-screen widget, so
-that one source is skipped when the script runs as a widget; the other four
-still work.)
+Each source is **paginated** (several pages deep) so the dataset is rich enough
+to filter by beds/price/baths on the dashboard. Because WebView loads aren't
+instant, a full run takes roughly a minute — tune the depth via the `PAGES`
+constant near the top of `sf-rentals.js`. (WebViews can't run inside a
+home-screen widget; running as a widget falls back to the raw HTTP path, which
+gets the unprotected sources.)
 
 ## One-time setup (~5 minutes, all on the phone)
 
