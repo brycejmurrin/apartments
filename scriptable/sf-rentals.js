@@ -557,7 +557,6 @@ async function redfinOnce() {
   }
   throw new Error("rentals HTTP " + (lastErr.code || lastErr.error) + (detail ? ": " + detail : ""));
 }
-}
 
 async function scrapeRedfin() {
   await prime("https://www.redfin.com/");
