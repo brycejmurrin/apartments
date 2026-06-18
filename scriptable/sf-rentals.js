@@ -917,7 +917,13 @@ async function apartmentsPage(pageNum, seen, out) {
       parsed = await aptTry(wv, url, 18000, "C-search");
     }
   } else {
-    parsed = await aptTry(wv, url, 10000, `page${pageNum}`);
+    // Pages 2+: same double-load strategy — rapid automated pagination triggers
+    // Akamai the same way as page 1.
+    parsed = await aptTry(wv, url, 12000, `page${pageNum}-first`);
+    if (!parsed.count) {
+      console.log(`DEBUG: APT page ${pageNum} blocked on first try, reloading...`);
+      parsed = await aptTry(wv, url, 18000, `page${pageNum}-reload`);
+    }
   }
 
   if (!parsed.count) {
@@ -961,7 +967,7 @@ async function scrapeApartments() {
   for (let p = 1; p <= PAGES.apartments; p++) {
     const added = await apartmentsPage(p, seen, out);
     if (!added) break;
-    await sleep(400);
+    await sleep(3000); // pause between pages so Akamai doesn't flag rapid pagination
   }
   if (!out.length) throw new Error("0 listings after all strategies");
   return out;
