@@ -857,6 +857,10 @@ const APT_EXTRACTOR = `(function(){
   return JSON.stringify({ count: out.length, title: document.title || '', items: out });
 })();`;
 
+// Shared WebView for all Apartments.com pages — created once on page 1 so
+// the Akamai _abck cookie persists across paginated requests.
+let _aptWv = null;
+
 async function apartmentsPage(pageNum, seen, out) {
   const city = CRITERIA.city.trim().toLowerCase().replace(/ /g, "-");
   const bedSeg = CRITERIA.minBeds != null ? `${CRITERIA.minBeds}-bedrooms/` : "";
@@ -864,17 +868,23 @@ async function apartmentsPage(pageNum, seen, out) {
   const url =
     `https://www.apartments.com/${city}-${CRITERIA.state.toLowerCase()}/` + bedSeg + pageSeg;
 
-  // Use a FRESH WebView for Apartments so Akamai sees a clean session (reusing
-  // one that has navigated other domains tends to come back challenged/blank).
-  const wv = new WebView();
-  await wv.loadURL(url);
-  await sleep(5000);
-  let parsed = JSON.parse(await wv.evaluateJavaScript(APT_EXTRACTOR));
+  if (pageNum === 1) {
+    // Fresh WebView + homepage prime so Akamai sets the _abck cookie before
+    // we hit the search URL. Reuse the same WV for subsequent pages.
+    _aptWv = new WebView();
+    await _aptWv.loadURL("https://www.apartments.com/");
+    await sleep(4000); // let Akamai JS run and issue the cookie
+    await _aptWv.loadURL(url);
+  } else {
+    await _aptWv.loadURL(url);
+  }
+  await sleep(6000); // give Akamai time to validate and render listings
+
+  let parsed = JSON.parse(await _aptWv.evaluateJavaScript(APT_EXTRACTOR));
   if ((!parsed.items || !parsed.items.length) && pageNum === 1) {
-    // Akamai may still be clearing — wait longer on the same loaded page and
-    // re-extract once before declaring the source blocked.
-    await sleep(4000);
-    parsed = JSON.parse(await wv.evaluateJavaScript(APT_EXTRACTOR));
+    // One extra retry — Akamai sometimes needs more time on first search load
+    await sleep(5000);
+    parsed = JSON.parse(await _aptWv.evaluateJavaScript(APT_EXTRACTOR));
   }
   if (!parsed.items || !parsed.items.length) {
     if (pageNum === 1)
