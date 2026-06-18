@@ -42,6 +42,9 @@ function bedFrag(minKey, maxKey) {
 // return a big batch in one call and don't paginate here.
 const PAGES = { zillow: 5, trulia: 5, apartments: 3 };
 
+const SF_LAT = 37.7749;  // San Francisco downtown — used for sapi geo filter
+const SF_LNG = -122.4194;
+
 // Minimal, real-looking Safari headers. We deliberately do NOT set
 // Accept-Encoding or Connection — NSURLSession (which Scriptable's Request uses)
 // manages those itself and transparently decompresses gzip; forcing "br" can
@@ -280,6 +283,7 @@ async function clFromSapi() {
     "https://sapi.craigslist.org/web/v8/postings/search/full" +
     "?batch=1-0-360-0-0&cc=US&lang=en&searchPath=apa" +
     "&availabilityMode=0" +
+    `&lat=${SF_LAT}&lon=${SF_LNG}&search_distance=20` +
     bedFrag("min_bedrooms", "max_bedrooms");
   const r = await fetchJSON(
     url,
@@ -315,9 +319,11 @@ async function clFromSapi() {
       }
       if (typeof node === "number") {
         numbers.push(node);
-        // 10-digit value ~ unix seconds → posting date.
+        // unix seconds (10-digit) or milliseconds (13-digit) → posting date.
         if (posted == null && node > 1000000000 && node < 4000000000) {
           posted = new Date(node * 1000).toISOString();
+        } else if (posted == null && node > 1000000000000 && node < 4000000000000) {
+          posted = new Date(node).toISOString();
         }
         return;
       }
@@ -346,13 +352,23 @@ async function clFromSapi() {
     };
     it.forEach(visit);
 
-    // Title = the longest free-text string (not a pure housing/price token).
+    // Skip listings whose coordinates are outside the Bay Area (lat/lng detected but wrong region).
+    if (lat != null && (lat < 36.9 || lat > 38.9 || lng < -123.5 || lng > -121.0)) continue;
+
+    // Title = longest string that has spaces (real title) — skip URL slugs (no spaces) and prices.
     let title = "";
     for (const s of strings) {
-      if (/^\$?\d/.test(s.trim())) continue;
+      if (/^\$?\d/.test(s.trim())) continue;          // price string
+      if (!s.includes(" ") && /^[a-z0-9-]+$/.test(s)) continue; // URL slug
       if (s.length > title.length) title = s;
     }
-    if (!title) title = strings.sort((a, b) => b.length - a.length)[0] || "";
+    if (!title) {
+      // fallback: any non-price string
+      for (const s of strings) {
+        if (/^\$?\d/.test(s.trim())) continue;
+        if (s.length > title.length) title = s;
+      }
+    }
 
     // Beds/sqft/hood from any string if not already structured.
     for (const s of strings) {
@@ -507,7 +523,7 @@ async function redfinOnce() {
         baths: bathR.min != null ? bathR.min : null,
         sqft: sqftR.min != null ? sqftR.min : (hd.sqFt && hd.sqFt.value) || null,
         address: street,
-        neighborhood: addrInfo.city || hd.neighborhood || null,
+        neighborhood: addrInfo.neighborhoodName || addrInfo.city || hd.neighborhood || null,
         lat: centroid.latitude != null ? centroid.latitude : null,
         lng: centroid.longitude != null ? centroid.longitude : null,
         posted_at: posted,
@@ -560,7 +576,7 @@ function zillowMap(h) {
         : "https://www.zillow.com" + h.detailUrl
       : "",
     title: h.address || h.streetAddress || "Zillow rental",
-    price: parsePrice(h.price || h.unformattedPrice || hi.price),
+    price: parsePrice(h.price || h.unformattedPrice || hi.price || h.priceLabel || h.minPrice),
     beds: h.beds != null ? Number(h.beds) : hi.bedrooms != null ? Number(hi.bedrooms) : null,
     baths: h.baths != null ? Number(h.baths) : hi.bathrooms != null ? Number(hi.bathrooms) : null,
     sqft:
@@ -572,6 +588,9 @@ function zillowMap(h) {
       "San Francisco",
     lat: h.latLong ? h.latLong.latitude : hi.latitude != null ? hi.latitude : null,
     lng: h.latLong ? h.latLong.longitude : hi.longitude != null ? hi.longitude : null,
+    posted_at: h.hdpData && h.hdpData.homeInfo && h.hdpData.homeInfo.datePosted
+      ? new Date(h.hdpData.homeInfo.datePosted).toISOString()
+      : null,
   });
 }
 
@@ -691,9 +710,9 @@ function truliaMap(h, seenUrls) {
     price: truliaNum(h.price),
     beds: truliaNum(h.bedrooms),
     baths: truliaNum(h.bathrooms),
-    sqft: truliaNum(h.floorSpace),
+    sqft: truliaNum(h.floorSpace) || truliaNum(h.squareFeet) || null,
     address: addr,
-    neighborhood: loc.neighborhoodName || null,
+    neighborhood: loc.neighborhoodName || loc.city || null,
     lat: coords.latitude != null ? Number(coords.latitude) : null,
     lng: coords.longitude != null ? Number(coords.longitude) : null,
   });
@@ -754,23 +773,45 @@ const APT_EXTRACTOR = `(function(){
   function key(u){ return (u||'').replace(/\\/+$/,''); }
   function slot(u){ var k=key(u); if(!map[k]) map[k]={url:u}; return map[k]; }
   function set(o, f, v){ if(v!=null && v!=='' && (o[f]==null||o[f]==='')) o[f]=v; }
+  function norm(s){ return (s||'').replace(/\\s+/g,' ').trim(); }
+  // Extract field via CSS selector from a card element
+  function tx(el, sel){
+    var found = el.querySelector(sel);
+    return found ? norm(found.textContent) : null;
+  }
+  // Parse numbers from card full-text (price, beds, baths, sqft)
+  function fromText(text, pat){ var m=text.match(pat); return m?m[1].replace(/,/g,''):null; }
+
   try {
-    var cards = document.querySelectorAll('article.placard, li.mortar-wrapper article, .placard');
+    // Try many selector patterns — Apartments.com periodically changes class names
+    var cards = document.querySelectorAll(
+      'article[data-url], [data-url][class*="placard"], article.placard, ' +
+      'li.mortar-wrapper article, [class*="property-card"], [class*="listing-card"], ' +
+      '[data-testid*="card"], [class*="placard"]'
+    );
     for (var c=0;c<cards.length;c++){
       var a = cards[c];
       var u = a.getAttribute('data-url');
-      if(!u){ var ln=a.querySelector('a.property-link,a[href]'); u = ln && ln.href; }
-      if(!u) continue;
-      function tx(sel){ var el=a.querySelector(sel); return el?el.textContent.replace(/\\s+/g,' ').trim():null; }
+      if(!u){ var ln=a.querySelector('a.property-link,a[href*="/apartments.com/"],a[href]'); u = ln && ln.href; }
+      if(!u||u==='#') continue;
       var o = slot(u);
-      set(o,'id', a.getAttribute('data-listingid'));
-      set(o,'name', tx('.js-placardTitle, .property-title, .property-name'));
-      set(o,'price', tx('.property-pricing, .price-range, .property-rents'));
-      set(o,'beds', tx('.property-beds, .bed-range'));
-      set(o,'baths', tx('.property-baths, .bath-range'));
-      set(o,'address', tx('.property-address'));
+      // Try explicit selectors first, then fall back to full-text parsing
+      set(o,'id', a.getAttribute('data-listingid') || a.getAttribute('data-id'));
+      set(o,'name', tx(a, '.js-placardTitle,.property-title,.property-name,[class*="title"],[class*="name"]'));
+      set(o,'price', tx(a, '.property-pricing,.price-range,.property-rents,[class*="price"],[data-testid*="price"]'));
+      set(o,'beds',  tx(a, '.property-beds,.bed-range,[class*="beds"],[class*="bedroom"]'));
+      set(o,'baths', tx(a, '.property-baths,.bath-range,[class*="baths"],[class*="bathroom"]'));
+      set(o,'sqft',  tx(a, '.property-sqft,.sqft-range,[class*="sqft"],[class*="sq-ft"],[class*="size"]'));
+      set(o,'address', tx(a, '.property-address,[class*="address"]'));
+      // Full-text fallback if selectors got nothing
+      var full = norm(a.textContent);
+      if(!o.price) set(o,'price', fromText(full, /\\$(\\d[\\d,]*)/));
+      if(!o.beds)  set(o,'beds',  fromText(full, /(\\d+)\\s*(?:Bed|BR|Studio)/i));
+      if(!o.baths) set(o,'baths', fromText(full, /(\\d+(?:\\.\\d+)?)\\s*(?:Bath|BA)/i));
+      if(!o.sqft)  set(o,'sqft',  fromText(full, /([\\d,]+)\\s*(?:Sq\\s?Ft|SF)/i));
     }
   } catch(e){}
+
   try {
     var s = document.querySelectorAll('script[type="application/ld+json"]');
     for (var i=0;i<s.length;i++){
@@ -782,20 +823,23 @@ const APT_EXTRACTOR = `(function(){
         if (e['@type']==='SearchResultsPage' && e.about && e.about.length) items = e.about;
         else if (e.itemListElement && e.itemListElement.length)
           items = e.itemListElement.map(function(x){ return (x&&x.item)||x; });
+        // Also try top-level ApartmentComplex/Residence objects directly
+        else if (e['@type'] && e.url) items = [e];
         for (var k=0;k<items.length;k++){
           var it = items[k]; if(!it||typeof it!=='object') continue;
           var u = it.url || it['@id']; if(!u) continue;
           var addr = it.address || {}; var geo = it.geo || {};
           var o = slot(u);
           set(o,'name', it.name);
-          set(o,'address', (typeof addr==='string')?addr:(addr.streetAddress||null));
-          set(o,'city', (typeof addr==='object')?(addr.addressLocality||null):null);
-          if(geo.latitude!=null) set(o,'lat', geo.latitude);
+          set(o,'address', typeof addr==='string' ? addr : (addr.streetAddress||null));
+          set(o,'city', typeof addr==='object' ? (addr.addressLocality||null) : null);
+          if(geo.latitude!=null)  set(o,'lat', geo.latitude);
           if(geo.longitude!=null) set(o,'lng', geo.longitude);
         }
       }
     }
   } catch(e){}
+
   var out = [];
   for (var kk in map) out.push(map[kk]);
   return JSON.stringify({ count: out.length, title: document.title || '', items: out });
