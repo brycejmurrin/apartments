@@ -980,7 +980,7 @@ async function main() {
 
   const SOURCES = [
     ["craigslist", scrapeCraigslist],
-    ["redfin", scrapeRedfin],
+    // ["redfin", scrapeRedfin],  // API changed; temporarily disabled
     ["zillow", scrapeZillow],
     ["trulia", scrapeTrulia],
     ["apartments_com", scrapeApartments],
