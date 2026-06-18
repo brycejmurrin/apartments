@@ -426,35 +426,17 @@ function stripRedfin(t) {
 const REDFIN_REGION = { "sanfrancisco,ca": "17151" };
 
 async function redfinRegion() {
-  // Primary: ask Redfin's autocomplete. This path is sometimes 403'd even from
-  // a residential IP, so failure falls through to the known-ID map below.
-  try {
-    const r = await fetchJSON(
-      "https://www.redfin.com/stingray/do/location-autocomplete?location=" +
-        encodeURIComponent(`${CRITERIA.city}, ${CRITERIA.state}`) +
-        "&v=2&al=1",
-      { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" },
-      (t) => t.indexOf("payload") >= 0 || t.indexOf("rows") >= 0
-    );
-    if (!(r.code >= 400 || r.error)) {
-      const data = JSON.parse(stripRedfin(r.text));
-      for (const sec of (data.payload && data.payload.sections) || []) {
-        for (const row of sec.rows || []) {
-          if (String(row.type) === "6" && row.id) return row.id.split("_").pop();
-        }
-      }
-    }
-  } catch (_) {}
-
-  // Fallback: hardcoded region id (bypasses the blocked autocomplete endpoint).
+  // Use hardcoded region IDs only. The autocomplete endpoint returns a different
+  // numeric ID (e.g. 116213) than what the rentals API expects (17151), and the
+  // rentals API rejects autocomplete IDs with "Must supply internal_region_ids".
+  // The Worker probe confirmed region_id=17151 returns 350 homes correctly.
   const key = `${CRITERIA.city},${CRITERIA.state}`.toLowerCase().replace(/\s+/g, "");
   if (REDFIN_REGION[key]) return REDFIN_REGION[key];
-  throw new Error("no region id (autocomplete blocked, no fallback)");
+  throw new Error("no region id for " + key + " — add it to REDFIN_REGION");
 }
 
 async function redfinOnce() {
   const regionId = await redfinRegion();
-  console.log("DEBUG: Redfin regionId=" + regionId);
   const q = [
     "al=1",
     `region_id=${regionId}`,
@@ -468,23 +450,16 @@ async function redfinOnce() {
     .concat(CRITERIA.minBeds != null ? [`min_beds=${CRITERIA.minBeds}`] : [])
     .concat(CRITERIA.maxBeds != null ? [`max_beds=${CRITERIA.maxBeds}`] : [])
     .join("&");
-  const url = "https://www.redfin.com/stingray/api/v1/search/rentals?" + q;
-  console.log("DEBUG: Redfin URL=" + url.substring(0, 120) + "...");
   const r = await fetchJSON(
-    url,
+    "https://www.redfin.com/stingray/api/v1/search/rentals?" + q,
     {
       Accept: "application/json, text/plain, */*",
       Referer: "https://www.redfin.com/",
-      Origin: "https://www.redfin.com"
+      Origin: "https://www.redfin.com",
     },
     (t) => t.indexOf("homeData") >= 0 || t.indexOf('"homes"') >= 0
   );
-  if (r.code >= 400 || r.error) {
-    console.log("DEBUG: Redfin rentals failed: code=" + r.code + " error=" + r.error + " text.len=" + (r.text || "").length);
-    console.log("DEBUG: Redfin response start: " + (r.text || "").substring(0, 300));
-    throw new Error("rentals HTTP " + (r.code || r.error));
-  }
-  console.log("DEBUG: Redfin rentals success: code=" + r.code + " text.len=" + (r.text || "").length);
+  if (r.code >= 400 || r.error) throw new Error("rentals HTTP " + (r.code || r.error));
 
   const data = JSON.parse(stripRedfin(r.text));
   const homes = data.homes || (data.payload && data.payload.homes) || [];
