@@ -105,23 +105,37 @@ async function wvEval(url, js, waitMs) {
 }
 
 // Fetch an HTML page. Returns { code, text } shaped like httpGet.
-async function fetchHTML(url, referer) {
+// Strategy: try the fast DIRECT request first (works from a residential IP for
+// most sources). Only if it fails or doesn't contain the expected content
+// (`validate`) do we fall back to a real WebView. This avoids the regression
+// where forcing everything through a WebView returned bot-challenge pages for
+// sources that the direct request handled fine (e.g. Zillow).
+async function fetchHTML(url, referer, validate) {
+  const raw = await httpGet(url, referer ? { Referer: referer } : null);
+  const rawOK = !(raw.code >= 400 || raw.error) && (!validate || validate(raw.text));
+  if (rawOK) return raw;
+
   if (USE_WEBVIEW && !config.runsInWidget) {
     try {
       const html = await wvEval(url, "document.documentElement.outerHTML");
-      if (html && html.length > 1500) return { code: 200, text: html };
+      if (html && html.length > 1500 && (!validate || validate(html))) {
+        return { code: 200, text: html };
+      }
     } catch (e) {
-      /* fall through to raw */
+      /* fall through */
     }
   }
-  return httpGet(url, referer ? { Referer: referer } : null);
+  return raw; // return the (blocked) raw result so the caller throws a clear error
 }
 
-// Fetch a JSON endpoint through a real browser. We load the endpoint's own
-// origin in a WebView (establishing cookies + a real fingerprint), then run an
-// in-page fetch() to the URL — same-origin, so no CORS, and it returns the raw
-// JSON text (avoiding iOS Safari's interactive JSON viewer mangling innerText).
-async function fetchJSON(url, extra) {
+// Fetch a JSON endpoint. Direct request first; if blocked, fall back to a
+// WebView in-page fetch() (same-origin → no CORS, raw JSON text, no iOS
+// JSON-viewer mangling).
+async function fetchJSON(url, extra, validate) {
+  const raw = await httpGet(url, extra);
+  const rawOK = !(raw.code >= 400 || raw.error) && (!validate || validate(raw.text));
+  if (rawOK) return raw;
+
   if (USE_WEBVIEW && !config.runsInWidget) {
     try {
       const origin = (url.match(/^https?:\/\/[^/]+/) || [])[0] || url;
@@ -136,14 +150,19 @@ async function fetchJSON(url, extra) {
         ".then(function(t){completion(t);})" +
         ".catch(function(e){completion('__ERR__'+e);});})();";
       const text = await wv.evaluateJavaScript(js, true); // true = async completion
-      if (typeof text === "string" && text.indexOf("__ERR__") !== 0 && text.trim()) {
+      if (
+        typeof text === "string" &&
+        text.indexOf("__ERR__") !== 0 &&
+        text.trim() &&
+        (!validate || validate(text))
+      ) {
         return { code: 200, text };
       }
     } catch (e) {
-      /* fall through to raw */
+      /* fall through */
     }
   }
-  return httpGet(url, extra);
+  return raw;
 }
 
 // Visit a page to collect cookies (best-effort warm-up).
@@ -224,7 +243,7 @@ async function clFromRss() {
     `${base}/search/${CRITERIA.clArea}/apa` +
     `?availabilityMode=0&format=rss` +
     bedFrag("min_bedrooms", "max_bedrooms");
-  const r = await fetchHTML(url, base + "/");
+  const r = await fetchHTML(url, base + "/", (t) => t.indexOf("<item") >= 0);
   if (r.code >= 400 || r.error) throw new Error("RSS HTTP " + (r.code || r.error));
 
   const out = [];
@@ -262,11 +281,15 @@ async function clFromSapi() {
     "?batch=1-0-360-0-0&cc=US&lang=en&searchPath=apa" +
     "&availabilityMode=0" +
     bedFrag("min_bedrooms", "max_bedrooms");
-  const r = await fetchJSON(url, {
-    Accept: "application/json, text/plain, */*",
-    Referer: `https://${CRITERIA.clSite}.craigslist.org/`,
-    Origin: `https://${CRITERIA.clSite}.craigslist.org`,
-  });
+  const r = await fetchJSON(
+    url,
+    {
+      Accept: "application/json, text/plain, */*",
+      Referer: `https://${CRITERIA.clSite}.craigslist.org/`,
+      Origin: `https://${CRITERIA.clSite}.craigslist.org`,
+    },
+    (t) => t.trim().startsWith("{")
+  );
   if (r.code >= 400 || r.error) throw new Error("sapi HTTP " + (r.code || r.error));
 
   const data = JSON.parse(r.text);
@@ -410,7 +433,8 @@ async function redfinRegion() {
       "https://www.redfin.com/stingray/do/location-autocomplete?location=" +
         encodeURIComponent(`${CRITERIA.city}, ${CRITERIA.state}`) +
         "&v=2&al=1",
-      { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" }
+      { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" },
+      (t) => t.indexOf("payload") >= 0 || t.indexOf("rows") >= 0
     );
     if (!(r.code >= 400 || r.error)) {
       const data = JSON.parse(stripRedfin(r.text));
@@ -445,7 +469,8 @@ async function redfinOnce() {
     .join("&");
   const r = await fetchJSON(
     "https://www.redfin.com/stingray/api/v1/search/rentals?" + q,
-    { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" }
+    { Accept: "application/json, text/plain, */*", Referer: "https://www.redfin.com/" },
+    (t) => t.indexOf("homeData") >= 0 || t.indexOf('"homes"') >= 0
   );
   if (r.code >= 400 || r.error) throw new Error("rentals HTTP " + (r.code || r.error));
 
@@ -575,7 +600,8 @@ async function zillowPage(pageNum) {
   const pageSeg = pageNum > 1 ? `${pageNum}_p/` : "";
   const r = await fetchHTML(
     "https://www.zillow.com/san-francisco-ca/rentals/" + pageSeg + beds,
-    "https://www.zillow.com/"
+    "https://www.zillow.com/",
+    (t) => t.indexOf("__NEXT_DATA__") >= 0
   );
   if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
   const m = r.text.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
@@ -692,7 +718,7 @@ async function truliaPage(pageNum, seenUrls) {
   const beds = CRITERIA.minBeds != null ? `${CRITERIA.minBeds}p_beds/` : "";
   const pageSeg = pageNum > 1 ? `${pageNum}_p/` : "";
   const url = `https://www.trulia.com/for_rent/${city},${CRITERIA.state}/` + beds + pageSeg;
-  const r = await fetchHTML(url, "https://www.trulia.com/");
+  const r = await fetchHTML(url, "https://www.trulia.com/", (t) => t.indexOf("__NEXT_DATA__") >= 0);
   if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
   const m = r.text.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
   if (!m) throw new Error("no __NEXT_DATA__ (challenged?)");
@@ -792,12 +818,17 @@ async function apartmentsPage(pageNum, seen, out) {
   const url =
     `https://www.apartments.com/${city}-${CRITERIA.state.toLowerCase()}/` + bedSeg + pageSeg;
 
-  let parsed = JSON.parse(await wvEval(url, APT_EXTRACTOR, 4500));
+  // Use a FRESH WebView for Apartments so Akamai sees a clean session (reusing
+  // one that has navigated other domains tends to come back challenged/blank).
+  const wv = new WebView();
+  await wv.loadURL(url);
+  await sleep(5000);
+  let parsed = JSON.parse(await wv.evaluateJavaScript(APT_EXTRACTOR));
   if ((!parsed.items || !parsed.items.length) && pageNum === 1) {
     // Akamai may still be clearing — wait longer on the same loaded page and
     // re-extract once before declaring the source blocked.
-    await sleep(3500);
-    parsed = JSON.parse(await theWebView().evaluateJavaScript(APT_EXTRACTOR));
+    await sleep(4000);
+    parsed = JSON.parse(await wv.evaluateJavaScript(APT_EXTRACTOR));
   }
   if (!parsed.items || !parsed.items.length) {
     if (pageNum === 1)
