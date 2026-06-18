@@ -947,6 +947,7 @@ async function publish(payload, token) {
 // ---------------------------------------------------------------------------
 async function main() {
   const token = await getToken();
+  console.log("DEBUG: Got GitHub token");
 
   const SOURCES = [
     ["craigslist", scrapeCraigslist],
@@ -959,8 +960,10 @@ async function main() {
   const sources = {};
   let listings = [];
   for (const [name, fn] of SOURCES) {
+    console.log(`DEBUG: Starting ${name}...`);
     try {
       const got = await fn();
+      console.log(`DEBUG: ${name} got ${got.length} listings`);
       listings = listings.concat(got);
       sources[name] = {
         status: "ok",
@@ -969,6 +972,7 @@ async function main() {
         last_success: new Date().toISOString(),
       };
     } catch (e) {
+      console.log(`DEBUG: ${name} failed: ${e.message}`);
       sources[name] = {
         status: "blocked",
         count: 0,
@@ -1028,6 +1032,13 @@ async function main() {
 
 (async () => {
   try {
+    // Quick startup check — if you see this, the script is running
+    const startup = new Alert();
+    startup.title = "SF Rentals";
+    startup.message = "Starting scrape…";
+    startup.addAction("OK");
+    await startup.present();
+
     await main();
   } catch (e) {
     const a = new Alert();
