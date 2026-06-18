@@ -557,64 +557,6 @@ async function redfinOnce() {
   }
   throw new Error("rentals HTTP " + (lastErr.code || lastErr.error) + (detail ? ": " + detail : ""));
 }
-
-  const data = JSON.parse(stripRedfin(r.text));
-  const homes = data.homes || (data.payload && data.payload.homes) || [];
-  const out = [];
-  for (const h of homes) {
-    // Redfin's rentals API nests fields under homeData + rentalExtension; older
-    // shapes are flat. Read from wherever the field exists.
-    const hd = h.homeData || h;
-    const rx = h.rentalExtension || hd.rentalExtension || {};
-    const id = hd.propertyId || hd.listingId || h.rentalId || h.propertyId;
-    if (!id) continue;
-
-    const addrInfo = hd.addressInfo || {};
-    const street =
-      addrInfo.formattedStreetLine ||
-      rx.propertyName ||
-      (hd.streetLine && hd.streetLine.value) ||
-      hd.name ||
-      "Redfin rental";
-
-    const rent = rx.rentPriceRange || h.rentPriceRange || {};
-    const price = rent.min || rent.max || null;
-    const bedR = rx.bedRange || {};
-    const bathR = rx.bathRange || {};
-    const sqftR = rx.sqftRange || {};
-    const centroid = (addrInfo.centroid && addrInfo.centroid.centroid) || {};
-    const url = hd.url || h.url || "";
-
-    // Posting date: Redfin gives epoch millis in a few possible fields.
-    const epoch =
-      rx.availableDate || hd.listingAddedDate || hd.searchStatusDate || rx.lastUpdated;
-    const posted =
-      typeof epoch === "number" ? new Date(epoch).toISOString() : null;
-
-    out.push(
-      listing({
-        source: "redfin",
-        source_id: id,
-        url: url ? (url.startsWith("http") ? url : "https://www.redfin.com" + url) : "",
-        title: rx.propertyName || street,
-        price: typeof price === "number" ? price : null,
-        beds:
-          bedR.min != null
-            ? bedR.min
-            : typeof hd.beds === "number"
-            ? hd.beds
-            : null,
-        baths: bathR.min != null ? bathR.min : null,
-        sqft: sqftR.min != null ? sqftR.min : (hd.sqFt && hd.sqFt.value) || null,
-        address: street,
-        neighborhood: addrInfo.city || hd.neighborhood || null,
-        lat: centroid.latitude != null ? centroid.latitude : null,
-        lng: centroid.longitude != null ? centroid.longitude : null,
-        posted_at: posted,
-      })
-    );
-  }
-  return out;
 }
 
 async function scrapeRedfin() {
