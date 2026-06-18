@@ -55,6 +55,13 @@ button:hover { filter: brightness(1.1); }
   font-size: 12px; color: var(--text); cursor: pointer;
 }
 .chip input { margin-right: 4px; }
+.sources { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.src-stat {
+  font-size: 12px; padding: 3px 9px; border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.src-stat.ok { background: #14361f; color: #6fe39a; border-color: #1f5a33; }
+.src-stat.bad { background: #3a1717; color: #f0a0a0; border-color: #5a1f1f; }
 .status { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 14px; }
 .status.info { background: #1d2738; }
 .status.ok { background: #14361f; }

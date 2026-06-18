@@ -6,22 +6,18 @@ static GitHub Pages dashboard to browse the results.
 
 ## Two ways to use it
 
-**1. From the page on your phone (no setup, recommended).** The dashboard pulls
-live listings from a rental-data **API** directly in your browser. Get a free
-[RentCast API key](https://app.rentcast.io/app/api) (50 requests/month free),
-open the site, tap **⚙ API key** and paste it, then tap **⚡ Fetch live**. The
-key is stored only on your device — never committed or uploaded. This works
-because an API authenticates by key, not by IP, so there's no datacenter-IP
-block and no scraping involved.
+**1. Scrape from your iPhone (recommended, no computer).** Run the crawler on
+your phone with the free Scriptable app — it fetches from your phone's
+residential IP (so the sites don't block it) and pushes results to the repo. The
+GitHub Pages dashboard then shows them; tap **↻ Refresh** (or a home-screen
+widget) to update. See [`scriptable/README.md`](scriptable/README.md).
 
-**2. Scrape from your iPhone (no computer).** Run the crawler on your phone with
-the free Scriptable app — it fetches from your phone's residential IP (so the
-sites don't block it) and pushes results to the repo, which the page then shows.
-Tap a home-screen widget to refresh. See [`scriptable/README.md`](scriptable/README.md).
-
-**3. Scrape all five sites on a computer (power option).** Run the crawler on any
+**2. Scrape all five sites on a computer (power option).** Run the crawler on any
 home machine (residential IP) to pull Craigslist/Redfin/Zillow/Trulia/Apartments.com
 into `docs/data/listings.json`. See "Local crawler" below.
+
+Either way, the dashboard is a plain static page that reads
+`docs/data/listings.json` — no API keys, no server, no live browser fetch.
 
 ## How the local crawler works
 

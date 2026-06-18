@@ -298,25 +298,48 @@ async function redfinOnce() {
   const homes = data.homes || (data.payload && data.payload.homes) || [];
   const out = [];
   for (const h of homes) {
-    const id = h.rentalId || h.propertyId || h.listingId;
+    // Redfin's rentals API nests fields under homeData + rentalExtension; older
+    // shapes are flat. Read from wherever the field exists.
+    const hd = h.homeData || h;
+    const rx = h.rentalExtension || hd.rentalExtension || {};
+    const id = hd.propertyId || hd.listingId || h.rentalId || h.propertyId;
     if (!id) continue;
-    const rent = h.rentPriceRange || {};
+
+    const addrInfo = hd.addressInfo || {};
+    const street =
+      addrInfo.formattedStreetLine ||
+      rx.propertyName ||
+      (hd.streetLine && hd.streetLine.value) ||
+      hd.name ||
+      "Redfin rental";
+
+    const rent = rx.rentPriceRange || h.rentPriceRange || {};
     const price = rent.min || rent.max || null;
-    const street = (h.streetLine && h.streetLine.value) || h.name || "Redfin rental";
+    const bedR = rx.bedRange || {};
+    const bathR = rx.bathRange || {};
+    const sqftR = rx.sqftRange || {};
+    const centroid = (addrInfo.centroid && addrInfo.centroid.centroid) || {};
+    const url = hd.url || h.url || "";
+
     out.push(
       listing({
         source: "redfin",
         source_id: id,
-        url: h.url ? "https://www.redfin.com" + h.url : "",
-        title: street,
+        url: url ? (url.startsWith("http") ? url : "https://www.redfin.com" + url) : "",
+        title: rx.propertyName || street,
         price: typeof price === "number" ? price : null,
-        beds: typeof h.beds === "number" ? h.beds : null,
-        baths: typeof h.baths === "number" ? h.baths : null,
-        sqft: h.sqFt && h.sqFt.value,
+        beds:
+          bedR.min != null
+            ? bedR.min
+            : typeof hd.beds === "number"
+            ? hd.beds
+            : null,
+        baths: bathR.min != null ? bathR.min : null,
+        sqft: sqftR.min != null ? sqftR.min : (hd.sqFt && hd.sqFt.value) || null,
         address: street,
-        neighborhood: h.neighborhood || null,
-        lat: h.latLong && h.latLong.latitude,
-        lng: h.latLong && h.latLong.longitude,
+        neighborhood: addrInfo.city || hd.neighborhood || null,
+        lat: centroid.latitude != null ? centroid.latitude : null,
+        lng: centroid.longitude != null ? centroid.longitude : null,
       })
     );
   }

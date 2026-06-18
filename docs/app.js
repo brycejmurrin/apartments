@@ -1,10 +1,8 @@
 "use strict";
 
-// Search criteria (matches the project's focus). Change here if you like.
-const CRITERIA = { city: "San Francisco", state: "CA", bedrooms: 2, limit: 200 };
-
-const API_DEFAULTS = { base: "https://api.rentcast.io/v1", proxy: "" };
-const CACHE_KEY = "live_cache_v1";
+// Static dashboard for docs/data/listings.json — the file the Scriptable
+// scraper (or `make crawl`) pushes to this repo. No API keys, no live fetch:
+// the page just renders whatever listings have been committed.
 
 let ALL = [];
 let sortKey = "posted_at";
@@ -12,113 +10,55 @@ let sortDir = -1;
 const activeSources = new Set();
 
 // ---------------------------------------------------------------------------
-// Settings (API key etc.) — persisted in localStorage, never uploaded
+// Load
 // ---------------------------------------------------------------------------
-function getApi() {
-  return {
-    key: localStorage.getItem("api_key") || "",
-    base: localStorage.getItem("api_base") || API_DEFAULTS.base,
-    proxy: localStorage.getItem("api_proxy") || API_DEFAULTS.proxy,
-  };
-}
-function loadSettingsForm() {
-  const a = getApi();
-  document.getElementById("apiKey").value = a.key;
-  document.getElementById("apiBase").value = a.base;
-  document.getElementById("apiProxy").value = a.proxy;
-}
-function saveSettings() {
-  localStorage.setItem("api_key", document.getElementById("apiKey").value.trim());
-  localStorage.setItem("api_base", document.getElementById("apiBase").value.trim() || API_DEFAULTS.base);
-  localStorage.setItem("api_proxy", document.getElementById("apiProxy").value.trim());
-  setStatus("Saved. Tap “⚡ Fetch live” to load listings.", "ok");
-}
-
-// ---------------------------------------------------------------------------
-// Live fetch from the rental API (RentCast by default)
-// ---------------------------------------------------------------------------
-function buildUrl(a) {
-  const q = new URLSearchParams({
-    city: CRITERIA.city,
-    state: CRITERIA.state,
-    bedrooms: String(CRITERIA.bedrooms),
-    status: "Active",
-    limit: String(CRITERIA.limit),
-  });
-  const direct = `${a.base}/listings/rental/long-term?${q}`;
-  return a.proxy ? a.proxy + encodeURIComponent(direct) : direct;
-}
-
-async function fetchLive() {
-  const a = getApi();
-  if (!a.key) {
-    setStatus("Add a free API key first (⚙ API key).", "warn");
-    document.getElementById("settings").classList.remove("hidden");
-    return;
-  }
-  setStatus("Fetching live listings…", "info");
+async function load() {
+  setStatus("Loading latest listings…", "info");
   try {
-    const resp = await fetch(buildUrl(a), {
-      headers: { "X-Api-Key": a.key, Accept: "application/json" },
-    });
-    if (!resp.ok) {
-      const body = await resp.text();
-      setStatus(`API error ${resp.status}: ${body.slice(0, 200)}`, "error");
-      return;
-    }
-    const raw = await resp.json();
-    const items = Array.isArray(raw) ? raw : raw.listings || raw.data || [];
-    ALL = items.map(mapListing).filter((l) => l.beds == null || l.beds === CRITERIA.bedrooms);
-
-    const payload = { generated_at: new Date().toISOString(), total: ALL.length, listings: ALL };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
-    renderMeta(payload, "live");
+    const resp = await fetch("./data/listings.json?t=" + Date.now(), { cache: "no-store" });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    ALL = data.listings || [];
+    renderMeta(data);
+    renderSources(data.sources || {});
     activeSources.clear();
     buildSourceFilters();
     render();
-    setStatus(`Loaded ${ALL.length} listings.`, "ok");
-    setTimeout(() => document.getElementById("status").classList.add("hidden"), 2000);
+    if (ALL.length) {
+      setStatus(`Loaded ${ALL.length} listings.`, "ok");
+      setTimeout(() => document.getElementById("status").classList.add("hidden"), 1500);
+    } else {
+      setStatus("No listings yet — run the Scriptable scraper on your phone, then Refresh.", "warn");
+    }
   } catch (e) {
-    // A TypeError here is almost always the browser blocking the response (CORS).
-    setStatus(
-      `Couldn't reach the API: ${e.message}. If this says "Failed to fetch", the ` +
-      `API may not allow direct browser calls — set a CORS proxy prefix under ⚙ API key.`,
-      "error"
-    );
+    setStatus("Couldn't load listings.json: " + e.message, "error");
+    document.getElementById("meta").textContent = "No data yet.";
   }
-}
-
-// Map a RentCast listing object onto the table's shape. Defensive about keys.
-function mapListing(r) {
-  const address = r.formattedAddress || r.addressLine1 || "";
-  const priceNum = typeof r.price === "number" ? r.price : parseInt(r.price, 10) || null;
-  return {
-    source: "rentcast",
-    source_id: String(r.id || address),
-    url:
-      r.listingUrl ||
-      `https://www.google.com/search?q=${encodeURIComponent((address || "") + " for rent")}`,
-    title: address || "Rental",
-    price: priceNum,
-    beds: r.bedrooms != null ? Number(r.bedrooms) : null,
-    baths: r.bathrooms != null ? Number(r.bathrooms) : null,
-    sqft: r.squareFootage != null ? Number(r.squareFootage) : null,
-    address,
-    neighborhood: r.city || null,
-    lat: r.latitude ?? null,
-    lng: r.longitude ?? null,
-    posted_at: r.listedDate || r.lastSeenDate || null,
-    stale: false,
-  };
 }
 
 // ---------------------------------------------------------------------------
 // Render
 // ---------------------------------------------------------------------------
-function renderMeta(data, mode) {
+function renderMeta(data) {
   const when = data.generated_at ? new Date(data.generated_at).toLocaleString() : "never";
-  document.getElementById("meta").textContent =
-    `${data.total || 0} listings · ${mode === "live" ? "fetched" : "cached"}: ${when}`;
+  document.getElementById("meta").textContent = `${data.total || 0} listings · updated ${when}`;
+}
+
+function renderSources(sources) {
+  const el = document.getElementById("sources");
+  const entries = Object.entries(sources);
+  if (!entries.length) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = entries
+    .map(([name, s]) => {
+      const ok = s.status === "ok";
+      const label = ok ? `${s.count}` : "blocked";
+      const title = s.error ? ` title="${escapeHtml(s.error)}"` : "";
+      return `<span class="src-stat ${ok ? "ok" : "bad"}"${title}>${name}: ${label}</span>`;
+    })
+    .join("");
 }
 
 function buildSourceFilters() {
@@ -156,7 +96,8 @@ function filtered() {
 
 function render() {
   const rows = filtered().sort((a, b) => {
-    let av = a[sortKey], bv = b[sortKey];
+    let av = a[sortKey],
+      bv = b[sortKey];
     if (av == null) return 1;
     if (bv == null) return -1;
     if (typeof av === "string") return sortDir * av.localeCompare(bv);
@@ -192,53 +133,9 @@ function setStatus(msg, kind) {
 }
 
 // ---------------------------------------------------------------------------
-// Startup: show cached results if we have them; otherwise prompt to fetch
+// Wire up
 // ---------------------------------------------------------------------------
-async function init() {
-  loadSettingsForm();
-
-  // Gather both data sources, then show whichever is freshest (by
-  // generated_at) and actually has listings. This way a freshly-pushed
-  // scraper file (docs/data/listings.json, written by the Scriptable app or
-  // `make crawl`) wins over a stale or empty in-browser API cache.
-  const candidates = [];
-
-  const cached = localStorage.getItem(CACHE_KEY);
-  if (cached) {
-    try {
-      const data = JSON.parse(cached);
-      if (data.listings && data.listings.length) candidates.push({ data, mode: "cache" });
-    } catch (_) {}
-  }
-
-  try {
-    const resp = await fetch("./data/listings.json", { cache: "no-store" });
-    const data = await resp.json();
-    if (data.listings && data.listings.length) candidates.push({ data, mode: "scraped" });
-  } catch (_) {}
-
-  if (candidates.length) {
-    candidates.sort(
-      (a, b) =>
-        new Date(b.data.generated_at || 0) - new Date(a.data.generated_at || 0)
-    );
-    const best = candidates[0];
-    ALL = best.data.listings || [];
-    renderMeta(best.data, best.mode === "scraped" ? "cache" : "cache");
-    buildSourceFilters();
-    render();
-    return;
-  }
-
-  document.getElementById("meta").textContent =
-    "No listings yet — add an API key (⚙) and tap ⚡ Fetch live, or run the Scriptable app.";
-}
-
-document.getElementById("fetchBtn").addEventListener("click", fetchLive);
-document.getElementById("settingsBtn").addEventListener("click", () =>
-  document.getElementById("settings").classList.toggle("hidden")
-);
-document.getElementById("saveSettings").addEventListener("click", saveSettings);
+document.getElementById("refreshBtn").addEventListener("click", load);
 ["search", "minPrice", "maxPrice"].forEach((id) =>
   document.getElementById(id).addEventListener("input", render)
 );
@@ -251,4 +148,4 @@ document.querySelectorAll("th[data-sort]").forEach((th) =>
   })
 );
 
-init();
+load();
