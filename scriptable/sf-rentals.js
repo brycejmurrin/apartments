@@ -453,11 +453,10 @@ async function redfinRegion() {
 }
 
 async function redfinOnce() {
-  const regionId = await redfinRegion();
-  console.log(`DEBUG: Redfin regionId=${regionId}`);
+  console.log(`DEBUG: Redfin trying location search...`);
   const q = [
     "al=1",
-    `region=${regionId}`,
+    `location=${encodeURIComponent(`${CRITERIA.city}, ${CRITERIA.state}`)}`,
     "num_homes=350",
     "ord=redfin-recommended-asc",
     "page_number=1",
