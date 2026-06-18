@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T09:51:48.501284+00:00",
+  "generated_at": "2026-06-18T09:53:24.245652+00:00",
   "criteria": {
     "city": "San Francisco",
     "state": "CA",
@@ -14,31 +14,31 @@
     "craigslist": {
       "status": "blocked",
       "count": 0,
-      "error": "403 for https://sfbay.craigslist.org/search/sfc/apa",
+      "error": "HTTP Error 403: Forbidden",
       "last_success": null
     },
     "redfin": {
       "status": "blocked",
       "count": 0,
-      "error": "403 for https://www.redfin.com/stingray/do/location-autocomplete",
+      "error": "HTTP Error 403: ",
       "last_success": null
     },
     "zillow": {
       "status": "blocked",
       "count": 0,
-      "error": "403 for https://www.zillow.com/search/GetSearchPageState.htm",
+      "error": "HTTP Error 403: ",
       "last_success": null
     },
     "trulia": {
       "status": "blocked",
       "count": 0,
-      "error": "403 for https://www.trulia.com/for_rent/San_Francisco,CA/2p_beds/",
+      "error": "HTTP Error 403: ",
       "last_success": null
     },
     "apartments_com": {
       "status": "blocked",
       "count": 0,
-      "error": "403 for https://www.apartments.com/san-francisco-ca/2-bedrooms/",
+      "error": "HTTP Error 403: ",
       "last_success": null
     }
   },
