@@ -13,11 +13,34 @@
       <p id="meta" class="muted">Loading…</p>
     </div>
     <div class="actions">
-      <a id="scrapeBtn" class="button" href="scriptable:///run?scriptName=SF%20Rentals"
+      <button id="liveBtn" title="Fetch live in-browser via a free scraping API">⚡ Fetch live</button>
+      <button id="liveSettingsBtn" class="ghost" title="Scraping-API key & options">⚙ API key</button>
+      <a id="scrapeBtn" class="button ghost" href="scriptable:///run?scriptName=SF%20Rentals"
          title="Run the scraper on your phone (residential IP) via Scriptable">⚡ Scrape now</a>
-      <button id="refreshBtn" title="Reload the latest scraped listings">↻ Refresh</button>
+      <button id="refreshBtn" class="ghost" title="Reload the latest scraped listings">↻ Refresh</button>
     </div>
   </header>
+
+  <section id="liveSettings" class="panel hidden">
+    <h2>Live scraping API</h2>
+    <p class="muted">
+      Fetch the five sites live, right in your browser — no phone, no server. A
+      free scraping API does the fetch on its own residential IPs (clearing the
+      sites' bot/IP blocks) and we parse the result here. Get a free key from
+      <a href="https://www.scraperapi.com/" target="_blank" rel="noopener">ScraperAPI</a>
+      (5,000 credits/month free) and paste it below. The key is stored only on
+      this device.
+    </p>
+    <label>API key <input id="scraperKey" type="password" placeholder="scraperapi key…" /></label>
+    <details>
+      <summary class="muted">Advanced (provider / proxy templates)</summary>
+      <label>Scraping-API request template (<code>{KEY}</code>, <code>{URL}</code>, <code>{RENDER}</code>)
+        <input id="scraperTmpl" /></label>
+      <label>CORS proxy template (<code>{URL}</code>) — needed because GitHub Pages can't read the API directly
+        <input id="scraperProxy" /></label>
+    </details>
+    <div class="actions"><button id="saveLive">Save</button></div>
+  </section>
 
   <section class="filters">
     <input id="search" type="search" placeholder="Search title / neighborhood…" />
@@ -71,5 +94,6 @@
   </footer>
 
   <script src="./app.js"></script>
+  <script src="./live.js"></script>
 </body>
 </html>

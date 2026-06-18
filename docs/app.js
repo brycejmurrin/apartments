@@ -7,6 +7,7 @@
 let ALL = [];
 let sortKey = "posted_at";
 let sortDir = -1;
+let liveMode = false; // true when showing scraping-API results (see live.js)
 const activeSources = new Set();
 const selectedBeds = new Set(); // empty = all bedroom counts. 4 means "4+".
 
@@ -161,9 +162,9 @@ document.getElementById("scrapeBtn").addEventListener("click", () => {
 });
 
 // When you switch back to this tab (e.g. after Scriptable finishes), reload the
-// latest committed data automatically.
+// latest committed data automatically — unless we're showing live API results.
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") load();
+  if (document.visibilityState === "visible" && !liveMode) load();
 });
 ["search", "minPrice", "maxPrice", "minBaths"].forEach((id) =>
   document.getElementById(id).addEventListener("input", render)
@@ -189,5 +190,20 @@ document.querySelectorAll("th[data-sort]").forEach((th) =>
     render();
   })
 );
+
+// Hook used by live.js (the scraping-API path) to push results into the
+// shared renderer without duplicating the table/filter logic.
+window.SFRentals = {
+  setStatus,
+  setData(listings, sources) {
+    liveMode = true;
+    ALL = listings;
+    renderMeta({ total: listings.length, generated_at: new Date().toISOString() });
+    renderSources(sources || {});
+    activeSources.clear();
+    buildSourceFilters();
+    render();
+  },
+};
 
 load();
