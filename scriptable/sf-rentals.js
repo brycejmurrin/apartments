@@ -245,8 +245,9 @@ function stripRedfin(t) {
 }
 
 // Known Redfin city region IDs (region_type 6), used when the autocomplete
-// endpoint is blocked. Add more here if you change CRITERIA.city.
-const REDFIN_REGION = { "san francisco,ca": "17151" };
+// endpoint is blocked. Keys are lowercased with spaces removed (see lookup
+// below). Add more here if you change CRITERIA.city.
+const REDFIN_REGION = { "sanfrancisco,ca": "17151" };
 
 async function redfinRegion() {
   // Primary: ask Redfin's autocomplete. This path is sometimes 403'd even from
