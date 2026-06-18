@@ -86,8 +86,19 @@ async function httpGet(url, extra) {
 const USE_WEBVIEW = true;
 const WV_WAIT_MS = 4000; // time for anti-bot JS + content to settle
 
+// Reuse ONE WebView for the whole run. Creating a fresh `new WebView()` per
+// page/source piles up native web views and iOS starts failing the later
+// loads (which showed up as Apartments.com — the last source — going blank).
+// Navigating a single WKWebView across pages/domains is fine; cookies are kept
+// per-domain in the shared store.
+let _wv = null;
+function theWebView() {
+  if (!_wv) _wv = new WebView();
+  return _wv;
+}
+
 async function wvEval(url, js, waitMs) {
-  const wv = new WebView();
+  const wv = theWebView();
   await wv.loadURL(url);
   await sleep(waitMs || WV_WAIT_MS);
   return wv.evaluateJavaScript(js);
@@ -114,7 +125,7 @@ async function fetchJSON(url, extra) {
   if (USE_WEBVIEW && !config.runsInWidget) {
     try {
       const origin = (url.match(/^https?:\/\/[^/]+/) || [])[0] || url;
-      const wv = new WebView();
+      const wv = theWebView();
       await wv.loadURL(origin);
       await sleep(2500); // let any bot-clearance cookies set
       const js =
@@ -781,7 +792,13 @@ async function apartmentsPage(pageNum, seen, out) {
   const url =
     `https://www.apartments.com/${city}-${CRITERIA.state.toLowerCase()}/` + bedSeg + pageSeg;
 
-  const parsed = JSON.parse(await wvEval(url, APT_EXTRACTOR, 4500));
+  let parsed = JSON.parse(await wvEval(url, APT_EXTRACTOR, 4500));
+  if ((!parsed.items || !parsed.items.length) && pageNum === 1) {
+    // Akamai may still be clearing — wait longer on the same loaded page and
+    // re-extract once before declaring the source blocked.
+    await sleep(3500);
+    parsed = JSON.parse(await theWebView().evaluateJavaScript(APT_EXTRACTOR));
+  }
   if (!parsed.items || !parsed.items.length) {
     if (pageNum === 1)
       throw new Error("0 listings (page: " + (parsed.title || "?").slice(0, 40) + ")");
