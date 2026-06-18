@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SF Rentals — Multi-site Crawler</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <h1>SF 2-Bedroom Rentals</h1>
+      <p id="meta" class="muted">Loading…</p>
+    </div>
+    <div class="actions">
+      <button id="runBtn" title="Trigger the GitHub Actions crawler">▶ Run crawler</button>
+      <button id="settingsBtn" class="ghost">⚙ Settings</button>
+    </div>
+  </header>
+
+  <section id="settings" class="panel hidden">
+    <h2>Settings</h2>
+    <p class="muted">
+      To launch the crawler from this page, paste a GitHub
+      <strong>fine-grained personal access token</strong> scoped to this repo with
+      <em>Actions: Read and write</em> permission. It is stored only in your
+      browser's localStorage and sent only to api.github.com.
+    </p>
+    <label>Owner <input id="owner" placeholder="brycejmurrin" /></label>
+    <label>Repo <input id="repo" placeholder="apartments" /></label>
+    <label>Branch <input id="branch" placeholder="claude/multi-site-rental-scraper-kto2c3" /></label>
+    <label>Token <input id="token" type="password" placeholder="github_pat_…" /></label>
+    <div class="actions">
+      <button id="saveSettings">Save</button>
+      <a id="actionsLink" href="#" target="_blank" rel="noopener" class="ghost button">Open Actions tab ↗</a>
+    </div>
+  </section>
+
+  <section class="filters">
+    <input id="search" type="search" placeholder="Search title / neighborhood…" />
+    <label>Min $ <input id="minPrice" type="number" min="0" step="100" /></label>
+    <label>Max $ <input id="maxPrice" type="number" min="0" step="100" /></label>
+    <span id="sourceFilters" class="source-filters"></span>
+    <span id="count" class="muted"></span>
+  </section>
+
+  <div id="status" class="status hidden"></div>
+
+  <table id="table">
+    <thead>
+      <tr>
+        <th data-sort="price">Price</th>
+        <th data-sort="beds">Beds</th>
+        <th data-sort="sqft">Sqft</th>
+        <th data-sort="title">Listing</th>
+        <th data-sort="neighborhood">Area</th>
+        <th data-sort="source">Source</th>
+        <th data-sort="posted_at">Posted</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <footer class="muted">
+    Data is crawled by GitHub Actions into <code>docs/data/listings.json</code>.
+    Sites with aggressive bot protection (Zillow, Trulia, Apartments.com) may show
+    no results when crawled from CI — see the repo README.
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>

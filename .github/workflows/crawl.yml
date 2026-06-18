@@ -1,0 +1,56 @@
+name: crawl
+
+# Runs the rental crawler and commits results to docs/data/listings.json.
+# - schedule: automatic refresh every 6 hours
+# - workflow_dispatch: the "Run crawler" button on the GitHub Pages site
+#   (and the Actions tab) triggers this
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      min_price:
+        description: "Minimum monthly rent (optional)"
+        required: false
+      max_price:
+        description: "Maximum monthly rent (optional)"
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crawl-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run crawler
+        env:
+          MIN_PRICE: ${{ github.event.inputs.min_price }}
+          MAX_PRICE: ${{ github.event.inputs.max_price }}
+        run: python -m scraper.run
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data/listings.json
+          if git diff --staged --quiet; then
+            echo "No changes to listings."
+          else
+            git commit -m "data: refresh listings ($(date -u +%Y-%m-%dT%H:%MZ))"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
