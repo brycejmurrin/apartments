@@ -149,6 +149,22 @@ function setStatus(msg, kind) {
 // Wire up
 // ---------------------------------------------------------------------------
 document.getElementById("refreshBtn").addEventListener("click", load);
+
+// Tapping "Scrape now" launches the Scriptable script (which runs on the
+// phone's residential IP and pushes new data to the repo). It takes ~1 minute.
+document.getElementById("scrapeBtn").addEventListener("click", () => {
+  setStatus(
+    "Launching Scriptable… it scrapes on your phone (~1 min), then pushes the " +
+      "data here. Come back and it'll reload automatically.",
+    "info"
+  );
+});
+
+// When you switch back to this tab (e.g. after Scriptable finishes), reload the
+// latest committed data automatically.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") load();
+});
 ["search", "minPrice", "maxPrice", "minBaths"].forEach((id) =>
   document.getElementById(id).addEventListener("input", render)
 );

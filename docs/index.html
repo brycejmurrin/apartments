@@ -13,6 +13,8 @@
       <p id="meta" class="muted">Loading…</p>
     </div>
     <div class="actions">
+      <a id="scrapeBtn" class="button" href="scriptable:///run?scriptName=SF%20Rentals"
+         title="Run the scraper on your phone (residential IP) via Scriptable">⚡ Scrape now</a>
       <button id="refreshBtn" title="Reload the latest scraped listings">↻ Refresh</button>
     </div>
   </header>
@@ -60,10 +62,12 @@
   </table>
 
   <footer class="muted">
-    Listings are scraped on your phone with the
-    <a href="https://github.com/brycejmurrin/apartments/blob/main/scriptable/README.md" target="_blank" rel="noopener">Scriptable app</a>
-    and committed to this repo. Tap <strong>↻ Refresh</strong> after a run to
-    load the latest.
+    Tap <strong>⚡ Scrape now</strong> to run the crawler on your phone (it uses
+    your residential IP via the
+    <a href="https://github.com/brycejmurrin/apartments/blob/main/scriptable/README.md" target="_blank" rel="noopener">Scriptable app</a>,
+    the only way to get past these sites' datacenter-IP blocks) and push fresh
+    data here — the page reloads automatically when you return. The button needs
+    the <strong>SF Rentals</strong> script installed in Scriptable once.
   </footer>
 
   <script src="./app.js"></script>
