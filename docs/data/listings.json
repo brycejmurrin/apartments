@@ -1,44 +1,22 @@
 {
-  "generated_at": "2026-06-18T09:58:52.439525+00:00",
+  "generated_at": "2026-06-18T10:26:17.906Z",
   "criteria": {
     "city": "San Francisco",
     "state": "CA",
     "min_bedrooms": 2,
-    "max_bedrooms": 2,
-    "min_price": null,
-    "max_price": null,
-    "cl_site": "sfbay",
-    "cl_area": "sfc"
+    "max_bedrooms": 2
   },
   "sources": {
     "craigslist": {
       "status": "blocked",
       "count": 0,
-      "error": "HTTP Error 403: Forbidden",
+      "error": "Error: HTTP 403",
       "last_success": null
     },
     "redfin": {
       "status": "blocked",
       "count": 0,
-      "error": "HTTP Error 403: ",
-      "last_success": null
-    },
-    "zillow": {
-      "status": "blocked",
-      "count": 0,
-      "error": "HTTP Error 403: ",
-      "last_success": null
-    },
-    "trulia": {
-      "status": "blocked",
-      "count": 0,
-      "error": "HTTP Error 403: ",
-      "last_success": null
-    },
-    "apartments_com": {
-      "status": "blocked",
-      "count": 0,
-      "error": "HTTP Error 403: ",
+      "error": "Error: HTTP 403",
       "last_success": null
     }
   },
