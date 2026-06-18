@@ -6,6 +6,14 @@ realistically needs a residential proxy and works best run locally. From a
 blocked IP expect ``http.get`` to raise an HTTPStatusError (the pipeline then
 marks the source "blocked"); we let that propagate.
 
+Two anti-fingerprint measures help here. First, the shared HTTP client uses
+``curl_cffi`` Chrome TLS/HTTP2 impersonation so our TLS (JA3) and HTTP/2
+fingerprint look like a real browser instead of Python. Second, we *prime
+cookies*: we open a persistent :func:`http.session`, hit the apartments.com
+homepage to collect Cloudflare's clearance cookie, then fetch the results page
+on the same session (with a ``Referer``) so that cookie is replayed. This is the
+highest-leverage move against Cloudflare's cookie/fingerprint checks.
+
 The results page renders listings two ways and we read both, then merge:
 
 1. **Placard cards (primary).** Each result is an ``<article>``/``<li>`` with
@@ -299,8 +307,24 @@ def _dedupe_key(listing: Listing) -> str:
 
 
 def search(c: Criteria) -> List[Listing]:
+    # Persistent, Chrome-impersonating session so cookies carry across calls.
+    s = http.session()
+
+    # Prime: a homepage view collects Cloudflare's clearance cookie onto the
+    # session. Ignore any failure here — it's best-effort warm-up, and the real
+    # request below is what we care about.
+    try:
+        http.get("https://www.apartments.com/", sess=s)
+    except Exception:
+        pass
+
+    # Fetch the results page on the same session so the primed cookie is sent.
     # Let 403/429/503 propagate so the pipeline can mark the source "blocked".
-    resp = http.get(_search_url(c))
+    resp = http.get(
+        _search_url(c),
+        sess=s,
+        headers={"Referer": "https://www.apartments.com/"},
+    )
     html = resp.text
 
     by_key: Dict[str, Listing] = {}

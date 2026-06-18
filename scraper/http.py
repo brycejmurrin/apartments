@@ -1,66 +1,112 @@
-"""Shared HTTP client: realistic headers, polite retries, sane timeouts.
+"""Shared HTTP client with browser impersonation (TLS + HTTP/2 fingerprint).
 
-Anti-bot reality check: Zillow, Trulia and Apartments.com fingerprint
-aggressively and frequently block datacenter IPs (which is what GitHub Actions
-runners use). This client does the basics — a browser-like User-Agent and
-backoff — but it cannot defeat PerimeterX/Cloudflare on its own. Adapters are
-expected to fail *gracefully* when blocked rather than crash the whole run.
+Why this exists: plain ``httpx``/``requests`` present a Python TLS (JA3) and
+HTTP/2 fingerprint that Cloudflare, Akamai and PerimeterX flag instantly — which
+is why every source returned 403 from CI *before any IP-reputation check*.
+``curl_cffi`` performs the request with a real Chrome TLS + HTTP/2 fingerprint,
+which is the single highest-leverage *free* change for getting past
+fingerprint-based blocking.
+
+It is not a silver bullet. PerimeterX (Zillow/Trulia) additionally runs a JS
+sensor challenge that a non-browser client cannot satisfy, so those may still be
+blocked. Cloudflare/Akamai sites (Craigslist, Redfin, Apartments.com) have a
+real chance, especially when cookies are primed via :func:`session` first.
+
+Adapters keep calling :func:`get` exactly as before; the impersonation is
+transparent. For sites that hand out a bot-clearance cookie on the first page
+view, call :func:`session`, hit the site homepage, then call the data endpoint
+with the same session so the cookie is sent.
 """
 from __future__ import annotations
 
 import time
-from typing import Optional
+from typing import Any, Optional
 
-import httpx
+from curl_cffi import requests as cffi
 
-DEFAULT_UA = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-)
+# Impersonation target. curl_cffi ships fingerprints for several Chrome builds;
+# a recent one matches the User-Agent real browsers send today.
+IMPERSONATE = "chrome124"
 
 BASE_HEADERS = {
-    "User-Agent": DEFAULT_UA,
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
-    "Connection": "keep-alive",
 }
 
+_BLOCKED = (403, 429, 503)
 
-def get(
+
+def session() -> "cffi.Session":
+    """A Chrome-impersonating session that persists cookies across calls.
+
+    Use for cookie-priming flows, e.g.::
+
+        s = http.session()
+        http.get("https://www.redfin.com/", sess=s)          # collect cookies
+        resp = http.get("https://www.redfin.com/stingray/...", sess=s)
+    """
+    s = cffi.Session(impersonate=IMPERSONATE)
+    s.headers.update(BASE_HEADERS)
+    return s
+
+
+def _request(
+    method: str,
     url: str,
     *,
+    sess: Optional["cffi.Session"] = None,
     headers: Optional[dict] = None,
     params: Optional[dict] = None,
-    timeout: float = 20.0,
+    json: Any = None,
+    data: Any = None,
+    timeout: float = 25.0,
     retries: int = 3,
-) -> httpx.Response:
-    """GET with browser headers and exponential backoff.
+) -> "cffi.Response":
+    """Perform a request with browser impersonation and backoff on bot walls.
 
-    Raises httpx.HTTPStatusError on the final non-2xx response so callers can
-    distinguish "blocked" (4xx/5xx) from a successful empty result.
+    Retries on 403/429/503 (the typical anti-bot responses) with exponential
+    backoff, then raises on the final blocked/again-non-2xx response so callers
+    can distinguish "blocked" from a genuine empty result.
     """
     merged = {**BASE_HEADERS, **(headers or {})}
+    client = sess if sess is not None else cffi
+    resp: Optional["cffi.Response"] = None
     last_exc: Optional[Exception] = None
+
     for attempt in range(retries):
+        kwargs: dict = {
+            "headers": merged,
+            "params": params,
+            "timeout": timeout,
+            "allow_redirects": True,
+        }
+        # A Session already carries impersonate; setting it again would error.
+        if sess is None:
+            kwargs["impersonate"] = IMPERSONATE
+        if json is not None:
+            kwargs["json"] = json
+        if data is not None:
+            kwargs["data"] = data
         try:
-            resp = httpx.get(
-                url,
-                headers=merged,
-                params=params,
-                timeout=timeout,
-                follow_redirects=True,
-            )
-            if resp.status_code in (403, 429, 503):
-                # Almost always an anti-bot wall; back off and retry once or twice.
-                last_exc = httpx.HTTPStatusError(
-                    f"{resp.status_code} for {url}", request=resp.request, response=resp
-                )
-                time.sleep(2 ** attempt)
-                continue
-            resp.raise_for_status()
-            return resp
-        except (httpx.TransportError, httpx.HTTPStatusError) as exc:
+            resp = client.request(method, url, **kwargs)
+        except Exception as exc:  # transport-level failure -> back off and retry
             last_exc = exc
             time.sleep(2 ** attempt)
-    assert last_exc is not None
-    raise last_exc
+            continue
+        if resp.status_code not in _BLOCKED:
+            break
+        time.sleep(2 ** attempt)
+
+    if resp is None:
+        assert last_exc is not None
+        raise last_exc
+    resp.raise_for_status()
+    return resp
+
+
+def get(url: str, **kwargs) -> "cffi.Response":
+    return _request("GET", url, **kwargs)
+
+
+def post(url: str, **kwargs) -> "cffi.Response":
+    return _request("POST", url, **kwargs)
