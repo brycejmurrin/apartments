@@ -36,11 +36,9 @@ function bedFrag(minKey, maxKey) {
   return s;
 }
 
-// How many result pages to pull per source. Zillow/Trulia paginate ~40/page,
-// so a few pages give enough depth to filter by beds/price on the dashboard.
-// Apartments runs in a (slower) WebView, so keep it smaller. Craigslist/Redfin
-// return a big batch in one call and don't paginate here.
-const PAGES = { zillow: 5, trulia: 5, apartments: 3 };
+// How many result pages to pull per source. Zillow/Trulia/Zumper paginate ~24-40/page.
+// Craigslist/Redfin return a big batch in one call and don't paginate here.
+const PAGES = { zillow: 5, trulia: 5, zumper: 5 };
 
 const SF_LAT = 37.7749;  // San Francisco downtown — used for sapi geo filter
 const SF_LNG = -122.4194;
@@ -757,179 +755,111 @@ async function scrapeTrulia() {
 }
 
 // ---------------------------------------------------------------------------
-// Source: Apartments.com — via a real WebView (defeats Akamai Bot Manager)
+// Source: Zumper (__NEXT_DATA__ — same pattern as Zillow/Trulia)
 // ---------------------------------------------------------------------------
-// Apartments.com is fronted by Akamai Bot Manager, which 403s any raw HTTP
-// request (no valid _abck sensor cookie). A real browser passes because it
-// executes Akamai's JS. Scriptable ships a real iOS WebKit WebView, so we load
-// the page there (real TLS + JS + your residential IP), let Akamai clear, then
-// scrape the rendered DOM via evaluateJavaScript. Widgets can't run a WebView,
-// so this source is skipped in widget context.
-// Scrape JSON-LD + placard cards from the live DOM and MERGE them per URL:
-// placards carry price/beds/address, JSON-LD carries geo/name. Returns a JSON
-// string. Defined once and reused for each paginated page.
-const APT_EXTRACTOR = `(function(){
-  var map = {};
-  function key(u){
-    u = (u||'').replace(/\\/+$/,'');
-    // strip domain so https://www.apartments.com/foo and /foo hash the same
-    var m = u.match(/apartments\\.com(\\/.+)/);
-    return m ? m[1] : u;
+// Zumper embeds all listing data in __NEXT_DATA__ JSON on every search page.
+// Direct HTTP from a residential IP works fine; no bot wall.
+function zumperNum(v) {
+  if (v == null) return null;
+  if (typeof v === "number") return v;
+  if (typeof v === "string") { const n = parseFloat(v.replace(/[^0-9.]/g, "")); return isNaN(n) ? null : n; }
+  if (typeof v === "object") {
+    for (const k of ["value", "min", "max", "price"]) if (v[k] != null) { const n = zumperNum(v[k]); if (n != null) return n; }
   }
-  function slot(u){ var k=key(u); if(!map[k]) map[k]={url:u}; return map[k]; }
-  function set(o, f, v){ if(v!=null && v!=='' && (o[f]==null||o[f]==='')) o[f]=v; }
-  function norm(s){ return (s||'').replace(/\\s+/g,' ').trim(); }
-  function tx(el, sel){ var f=el.querySelector(sel); return f?norm(f.textContent):null; }
-  function fromText(text, pat){ var m=text.match(pat); return m?(m[1]||'').replace(/,/g,''):null; }
-
-  // --- 1. JSON-LD first: reliable property names, addresses, geo ---
-  try {
-    var s = document.querySelectorAll('script[type="application/ld+json"]');
-    for (var i=0;i<s.length;i++){
-      var d; try { d = JSON.parse(s[i].textContent); } catch(e){ continue; }
-      var arr = Array.isArray(d) ? d : [d];
-      for (var j=0;j<arr.length;j++){
-        var e = arr[j]; if(!e||typeof e!=='object') continue;
-        var items = [];
-        if (e['@type']==='SearchResultsPage' && e.about) items = e.about;
-        else if (e.itemListElement)
-          items = e.itemListElement.map(function(x){ return (x&&x.item)||x; });
-        else if (e['@type'] && e.url) items = [e];
-        for (var k=0;k<items.length;k++){
-          var it = items[k]; if(!it||typeof it!=='object') continue;
-          var u = it.url || it['@id']; if(!u) continue;
-          var addr = it.address || {}; var geo = it.geo || {};
-          var o = slot(u);
-          var nm = (it.name||'').replace(/^3D Tour\\s*-\\s*/i,'').trim();
-          set(o,'name', nm||null);
-          set(o,'address', typeof addr==='string' ? addr : (addr.streetAddress||null));
-          set(o,'city', typeof addr==='object' ? (addr.addressLocality||null) : null);
-          if(geo.latitude!=null)  set(o,'lat', geo.latitude);
-          if(geo.longitude!=null) set(o,'lng', geo.longitude);
-        }
-      }
-    }
-  } catch(e){}
-
-  // --- 2. DOM cards: price, beds, baths, sqft (what JSON-LD lacks) ---
-  // card data-url is often a path (/foo/bar/) while JSON-LD uses the full URL.
-  // Normalize both to the absolute URL so they merge into the same slot.
-  function absUrl(u){
-    if(!u) return null;
-    if(u.startsWith('http')) return u.replace(/\\/+$/,'');
-    if(u.startsWith('/')) return 'https://www.apartments.com' + u.replace(/\\/+$/,'');
-    return u;
-  }
-  try {
-    var cards = document.querySelectorAll(
-      'article[data-url], [data-url][class*="placard"], article.placard, ' +
-      'li.mortar-wrapper article, [class*="property-card"], [class*="listing-card"], ' +
-      '[data-testid*="card"], [class*="placard"]'
-    );
-    for (var c=0;c<cards.length;c++){
-      var a = cards[c];
-      var u = absUrl(a.getAttribute('data-url'));
-      if(!u){ var ln=a.querySelector('a.property-link,a[href*="apartments.com/"],a[href]'); u = absUrl(ln&&ln.href); }
-      if(!u||u==='#') continue;
-      var o = slot(u);
-      set(o,'id', a.getAttribute('data-listingid') || a.getAttribute('data-id'));
-      // Specific selectors — avoid [class*="name"]/[class*="title"] which grab UI labels
-      set(o,'name',  tx(a, '.js-placardTitle,.property-title,.property-name,h2,h3'));
-      set(o,'price', tx(a, '.property-pricing,.price-range,.property-rents,.js-priceTag'));
-      set(o,'beds',  tx(a, '.property-beds,.bed-range,.js-beds'));
-      set(o,'baths', tx(a, '.property-baths,.bath-range,.js-baths'));
-      set(o,'sqft',  tx(a, '.property-sqft,.sqft-range,.js-sqft'));
-      set(o,'address', tx(a, '.property-address,.js-address'));
-      // Full-text fallback — only run if explicit selectors still got nothing
-      var full = norm(a.textContent);
-      if(!o.price) set(o,'price', fromText(full, /\\$(\\d[\\d,]*)/));
-      if(!o.beds){
-        var bm = full.match(/(\\d+)\\s*(?:Bed|bd|BR)s?/i);
-        set(o,'beds', bm ? bm[1] : (/\\bStudio\\b/i.test(full) ? '0' : null));
-      }
-      if(!o.baths) set(o,'baths', fromText(full, /(\\d+(?:\\.\\d+)?)\\s*(?:Bath|Ba)s?/i));
-      if(!o.sqft)  set(o,'sqft',  fromText(full, /([\\d,]+)\\s*(?:Sq\\s?Ft|SF)/i));
-    }
-  } catch(e){}
-
-  var out = [];
-  for (var kk in map) out.push(map[kk]);
-  return JSON.stringify({ count: out.length, title: document.title || '', items: out });
-})();`;
-
-async function apartmentsPage(pageNum, seen, out) {
-  const city = CRITERIA.city.trim().toLowerCase().replace(/ /g, "-");
-  const bedSeg = CRITERIA.minBeds != null ? `${CRITERIA.minBeds}-bedrooms/` : "";
-  const pageSeg = pageNum > 1 ? `${pageNum}/` : "";
-  const url =
-    `https://www.apartments.com/${city}-${CRITERIA.state.toLowerCase()}/` + bedSeg + pageSeg;
-
-  // Use the shared WebView (theWebView) — it has been navigating sites all run,
-  // which looks far more like a real browser to Akamai than a fresh cookie-free WV.
-  const wv = theWebView();
-
-  async function primeHomepage() {
-    await wv.loadURL("https://www.apartments.com/");
-    await sleep(8000); // give Akamai sensor JS ample time to collect signals
-  }
-
-  if (pageNum === 1) await primeHomepage();
-  await wv.loadURL(url);
-  await sleep(9000);
-
-  let parsed = JSON.parse(await wv.evaluateJavaScript(APT_EXTRACTOR));
-
-  // If blocked (Access Denied / challenge page), re-prime and retry once
-  if (!parsed.items || !parsed.items.length) {
-    await primeHomepage();
-    await wv.loadURL(url);
-    await sleep(12000);
-    parsed = JSON.parse(await wv.evaluateJavaScript(APT_EXTRACTOR));
-  }
-
-  if (!parsed.items || !parsed.items.length) {
-    if (pageNum === 1)
-      throw new Error("0 listings (page: " + (parsed.title || "?").slice(0, 40) + ")");
-    return 0; // later page empty → past the end
-  }
-
-  let added = 0;
-  for (const it of parsed.items) {
-    let u = it.url;
-    if (u && u.startsWith("/")) u = "https://www.apartments.com" + u;
-    const k = (u || "").replace(/\/+$/, "");
-    if (seen.has(k)) continue;
-    seen.add(k);
-    added++;
-    out.push(
-      listing({
-        source: "apartments_com",
-        source_id: it.id || idFromUrl(u),
-        url: u,
-        title: it.name || it.address || "Apartments.com listing",
-        price: parsePrice(it.price),
-        beds: parseBeds(it.beds),
-        baths: parseBaths(it.baths || it.beds),
-        sqft: parseSqft(it.sqft),
-        address: it.address || null,
-        neighborhood: it.city || null,
-        lat: it.lat != null ? Number(it.lat) : null,
-        lng: it.lng != null ? Number(it.lng) : null,
-      })
-    );
-  }
-  return added;
+  return null;
 }
 
-async function scrapeApartments() {
-  if (config.runsInWidget) throw new Error("WebView unavailable in widget");
-  const out = [];
-  const seen = new Set();
-  for (let p = 1; p <= PAGES.apartments; p++) {
-    const added = await apartmentsPage(p, seen, out);
-    if (!added) break;
-    await sleep(400);
+function looksLikeZumperHome(node) {
+  if (!node || typeof node !== "object" || Array.isArray(node)) return false;
+  if (!("id" in node)) return false;
+  if (!("price" in node) && !("minPrice" in node)) return false;
+  return "lat" in node || "street" in node || "city" in node || "location" in node || "address" in node;
+}
+
+function walkZumper(node, out, seen, depth) {
+  if (depth > 14 || !node || typeof node !== "object") return;
+  if (looksLikeZumperHome(node)) {
+    if (!seen.has(node)) { seen.add(node); out.push(node); }
+    return;
   }
+  if (Array.isArray(node)) { for (const v of node) walkZumper(v, out, seen, depth + 1); return; }
+  for (const v of Object.values(node)) walkZumper(v, out, seen, depth + 1);
+}
+
+function zumperMap(h, seenUrls) {
+  const path = h.url || h.path || h.permalink || "";
+  const url2 = path.startsWith("http") ? path : path ? "https://www.zumper.com" + path : null;
+  if (!url2 || seenUrls.has(url2)) return null;
+  seenUrls.add(url2);
+  const loc = (h.location && typeof h.location === "object" && h.location) || {};
+  const street = h.street || loc.street || loc.streetAddress || null;
+  const city = h.city || loc.city || null;
+  const state = h.state || loc.state || null;
+  const addr = [street, city, state].filter(Boolean).join(", ") || null;
+  const lat = h.lat || h.latitude || loc.lat || loc.latitude || null;
+  const lng = h.lng || h.longitude || loc.lng || loc.longitude || null;
+  const nbhd = h.neighborhood || h.neighborhoodName || loc.neighborhood || loc.neighborhoodName || city || null;
+  return listing({
+    source: "zumper",
+    source_id: String(h.id || idFromUrl(url2)),
+    url: url2,
+    title: addr || "Zumper rental",
+    price: zumperNum(h.price || h.minPrice),
+    beds: zumperNum(h.beds || h.bedrooms || h.numBeds),
+    baths: zumperNum(h.baths || h.bathrooms || h.numBaths),
+    sqft: zumperNum(h.sqft || h.squareFeet || h.size),
+    address: addr,
+    neighborhood: nbhd,
+    lat: lat != null ? Number(lat) : null,
+    lng: lng != null ? Number(lng) : null,
+  });
+}
+
+async function zumperPage(pageNum, seenUrls) {
+  const city = CRITERIA.city.replace(/ /g, "-").toLowerCase();
+  const state = CRITERIA.state.toLowerCase();
+  const pageSeg = pageNum > 1 ? `?page=${pageNum}` : "";
+  const url = `https://www.zumper.com/apartments-for-rent/${city}-${state}${pageSeg}`;
+  const r = await fetchHTML(url, "https://www.zumper.com/", (t) => t.indexOf("__NEXT_DATA__") >= 0);
+  if (r.code >= 400 || r.error) throw new Error("HTTP " + (r.code || r.error));
+  const m = r.text.match(/<script[^>]+id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  if (!m) throw new Error("no __NEXT_DATA__ (challenged?)");
+  const data = JSON.parse(m[1]);
+  // Try common Zumper key names first; walk the full tree as a fallback
+  let homes = findKeyArray(data, "listings", 0);
+  if (!homes.length) homes = findKeyArray(data, "listingResults", 0);
+  if (!homes.length) homes = findKeyArray(data, "searchListings", 0);
+  if (!homes.length) homes = findKeyArray(data, "rentalListings", 0);
+  if (!homes.length) homes = findKeyArray(data, "results", 0);
+  if (!homes.length) {
+    const walked = [];
+    walkZumper(data, walked, new Set(), 0);
+    homes = walked;
+  }
+  return homes.map((h) => zumperMap(h, seenUrls)).filter(Boolean);
+}
+
+async function scrapeZumper() {
+  await prime("https://www.zumper.com/");
+  const out = [];
+  const seenUrls = new Set();
+  for (let p = 1; p <= PAGES.zumper; p++) {
+    console.log(`DEBUG: Zumper page ${p}...`);
+    let got;
+    try {
+      got = await zumperPage(p, seenUrls);
+      console.log(`DEBUG: Zumper page ${p} got ${got.length}`);
+    } catch (e) {
+      console.log(`DEBUG: Zumper page ${p} failed: ${e.message}`);
+      if (p === 1) throw e;
+      break;
+    }
+    if (!got.length) break;
+    out.push(...got);
+    await sleep(500);
+  }
+  if (!out.length) throw new Error("0 homes");
+  console.log(`DEBUG: Zumper total: ${out.length}`);
   return out;
 }
 
@@ -1009,7 +939,7 @@ async function main() {
     ["redfin", scrapeRedfin],
     ["zillow", scrapeZillow],
     ["trulia", scrapeTrulia],
-    ["apartments_com", scrapeApartments],
+    ["zumper", scrapeZumper],
   ];
 
   const sources = {};
