@@ -28,10 +28,11 @@ def _strip(text: str) -> str:
     return text[len(_PREFIX):] if text.startswith(_PREFIX) else text
 
 
-def _resolve_region(c: Criteria) -> Optional[dict]:
+def _resolve_region(c: Criteria, sess=None) -> Optional[dict]:
     resp = http.get(
         "https://www.redfin.com/stingray/do/location-autocomplete",
         params={"location": f"{c.city}, {c.state}", "v": 2},
+        sess=sess,
     )
     data = json.loads(_strip(resp.text))
     sections = data.get("payload", {}).get("sections", [])
@@ -49,7 +50,15 @@ def _to_cents(dollars: Optional[int]) -> Optional[int]:
 
 
 def search(c: Criteria) -> List[Listing]:
-    region = _resolve_region(c)
+    # Prime cookies on a Chrome-impersonating session, then reuse it for the
+    # stingray API calls so any bot-clearance cookie is sent.
+    s = http.session()
+    try:
+        http.get("https://www.redfin.com/", sess=s)
+    except Exception:
+        pass
+
+    region = _resolve_region(c, sess=s)
     if not region:
         return []
 
@@ -72,7 +81,9 @@ def search(c: Criteria) -> List[Listing]:
         params["max_price"] = c.max_price
 
     resp = http.get(
-        "https://www.redfin.com/stingray/api/v1/search/rentals", params=params
+        "https://www.redfin.com/stingray/api/v1/search/rentals",
+        params=params,
+        sess=s,
     )
     data = json.loads(_strip(resp.text))
     homes = data.get("homes") or data.get("payload", {}).get("homes") or []

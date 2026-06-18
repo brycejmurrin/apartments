@@ -1,12 +1,20 @@
 """Trulia adapter.
 
 Trulia is a Next.js application owned by Zillow and shares Zillow's PerimeterX
-bot protection. In practice this means requests from datacenter / CI IP ranges
-(e.g. GitHub Actions runners) will *usually* be challenged and blocked: an
-``http.get`` against the search page tends to return 403/429/503, which
-``scraper.http`` surfaces as an ``httpx.HTTPStatusError``. We let that propagate
-so the pipeline can mark the source "blocked". Realistically this adapter needs
-a residential proxy and works best when run locally / from a residential IP.
+bot protection. All requests go through ``scraper.http``, which uses
+``curl_cffi`` to impersonate Chrome's TLS + HTTP/2 fingerprint — this clears
+fingerprint-based blocking, but PerimeterX *additionally* runs a JS sensor
+challenge that a non-browser client cannot satisfy, so requests from
+datacenter / CI IP ranges (e.g. GitHub Actions runners) may still be challenged
+and blocked.
+
+To give the primary path the best chance, ``search`` primes cookies first: it
+opens a Chrome-impersonating ``http.session()``, hits the Trulia homepage to
+collect any bot-clearance cookies, then fetches the search page with that same
+session so the cookies are sent. A hard block still surfaces as a raised HTTP
+status error from ``http.get`` (after its internal 403/429/503 retries), which
+we let propagate so the pipeline can mark the source "blocked". Realistically
+this adapter still works best when run locally / from a residential IP.
 
 Data interface (primary path)
 -----------------------------
@@ -52,8 +60,6 @@ from __future__ import annotations
 import json
 import re
 from typing import List, Optional
-
-import httpx
 
 from .. import http
 from ..config import Criteria
@@ -324,8 +330,11 @@ query WEB_searchForRent($searchDetails: SEARCH_DETAILS_INPUT!, $limit: Int) {
 """.strip()
 
 
-def _from_graphql(c: Criteria, seen_urls: set) -> List[Listing]:
+def _from_graphql(c: Criteria, seen_urls: set, sess=None) -> List[Listing]:
     """Best-effort GraphQL fallback. Never raises; returns [] on any problem.
+
+    Reuses the cookie-primed, Chrome-impersonating session from the primary path
+    (``sess``) so any bot-clearance cookies are sent with the POST.
 
     We cannot validate this against the live endpoint from this sandbox, so it
     is deliberately forgiving: any non-2xx, unexpected JSON shape, or transport
@@ -360,20 +369,21 @@ def _from_graphql(c: Criteria, seen_urls: set) -> List[Listing]:
     }
 
     try:
-        resp = httpx.post(
+        resp = http.post(
             f"{_BASE}/graphql",
+            sess=sess,
             headers={
-                **http.BASE_HEADERS,
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "Origin": _BASE,
                 "Referer": _search_url(c),
             },
-            content=json.dumps(payload),
+            json=payload,
             timeout=20.0,
-            follow_redirects=True,
         )
-    except httpx.HTTPError:
+    except Exception:
+        # Any transport error or a raised non-2xx (incl. retried 403/429/503)
+        # from http.post -> degrade cleanly, leaving the primary result intact.
         return []
 
     if resp.status_code != 200:
@@ -401,13 +411,23 @@ def _from_graphql(c: Criteria, seen_urls: set) -> List[Listing]:
 def search(c: Criteria) -> List[Listing]:
     """Return rentals matching ``c`` from Trulia.
 
-    Raises ``httpx.HTTPStatusError`` if the search page is blocked (so the
-    pipeline can mark the source "blocked"). Returns ``[]`` only when a page was
+    Raises an HTTP status error if the search page is blocked (so the pipeline
+    can mark the source "blocked"). Returns ``[]`` only when a page was
     successfully retrieved but genuinely contains no homes.
     """
+    # Cookie priming: a Chrome-impersonating session that persists cookies.
+    # Hit the homepage first so any bot-clearance cookie is collected, then
+    # reuse the session for the data fetch. Homepage failure is non-fatal.
+    s = http.session()
+    try:
+        http.get(_BASE + "/", sess=s)
+    except Exception:
+        # Priming is best-effort; the search fetch below is what matters.
+        pass
+
     # Primary fetch — let 403/429/503 propagate (handled by http.get's retries
-    # then raised as HTTPStatusError -> pipeline marks "blocked").
-    resp = http.get(_search_url(c))
+    # then raised as an HTTP status error -> pipeline marks "blocked").
+    resp = http.get(_search_url(c), sess=s)
 
     seen_urls: set = set()
     listings: List[Listing] = []
@@ -419,7 +439,7 @@ def search(c: Criteria) -> List[Listing]:
     # Fallback: only if the embedded blob was missing or yielded nothing.
     if not listings:
         try:
-            fallback = _from_graphql(c, seen_urls)
+            fallback = _from_graphql(c, seen_urls, sess=s)
         except Exception:
             # Belt-and-suspenders: the fallback must never break the run.
             fallback = []

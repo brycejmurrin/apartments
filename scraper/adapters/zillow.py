@@ -6,6 +6,13 @@ blocked (HTTP 403/429) from CI. It works most reliably when run from a
 residential IP; to make it robust in CI you would route `scraper.http` through a
 residential proxy.
 
+The shared HTTP client now uses curl_cffi Chrome TLS/HTTP2 impersonation, and
+this adapter additionally primes cookies by first loading the human-facing
+rentals page in a persistent session before calling the JSON endpoint with the
+same session. This improves the odds of clearing fingerprint-based blocks, but
+PerimeterX's JS sensor challenge cannot be satisfied by a non-browser client, so
+requests may still be blocked.
+
 Strategy: hit the same JSON endpoint the Zillow web app itself calls to populate
 its rentals search map/list:
 
@@ -212,16 +219,30 @@ def search(c: Criteria) -> List[Listing]:
         "wants": json.dumps({"cat1": ["listResults"]}, separators=(",", ":")),
         "requestId": 2,
     }
+    referer = _referer(c)
     headers = {
         "Accept": "application/json,text/javascript,*/*;q=0.01",
-        "Referer": _referer(c),
+        "Referer": referer,
         "X-Requested-With": "XMLHttpRequest",
     }
+
+    # Use a persistent, Chrome-impersonating session so cookies set while loading
+    # the human-facing rentals page are sent on the JSON request below.
+    s = http.session()
+
+    # Cookie-priming: load the rentals page first to collect any clearance
+    # cookies. Its failure is non-fatal (we only want the side-effect cookies),
+    # so swallow any error here.
+    try:
+        http.get(referer, sess=s, headers={"Referer": "https://www.zillow.com/"})
+    except Exception:
+        pass
 
     # Let HTTP errors (403/429/503 -> HTTPStatusError) propagate so the pipeline
     # can mark this source "blocked" rather than silently returning [].
     resp = http.get(
         "https://www.zillow.com/search/GetSearchPageState.htm",
+        sess=s,
         params=params,
         headers=headers,
     )
@@ -229,7 +250,10 @@ def search(c: Criteria) -> List[Listing]:
     try:
         data = resp.json()
     except (json.JSONDecodeError, ValueError):
-        return []
+        try:
+            data = json.loads(resp.text)
+        except (json.JSONDecodeError, ValueError):
+            return []
 
     listings: List[Listing] = []
     seen = set()

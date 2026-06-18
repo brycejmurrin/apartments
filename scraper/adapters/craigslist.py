@@ -79,5 +79,12 @@ def parse_feed(xml_text: str) -> List[Listing]:
 
 
 def search(c: Criteria) -> List[Listing]:
-    resp = http.get(_build_url(c), params=_build_params(c))
+    # Prime cookies on a Chrome-impersonating session (Craigslist fronts with
+    # Akamai), then fetch the RSS feed on the same session.
+    s = http.session()
+    try:
+        http.get(f"https://{c.cl_site}.craigslist.org/", sess=s)
+    except Exception:
+        pass
+    resp = http.get(_build_url(c), params=_build_params(c), sess=s)
     return parse_feed(resp.text)
